@@ -56,8 +56,7 @@ View::View(Controller *c, Model *m) :
 
 	// Sets some properties of the window.
   set_title( "Straights UI" );
-  // set_size_request(200, 100);
-	set_default_size(800, 100);
+  set_size_request(800, 600);
   set_border_width( 10 );
 
 
@@ -66,6 +65,7 @@ View::View(Controller *c, Model *m) :
 	add(sections);
 
   sections.add(gameControlSection);
+    gameControlSection.set_size_request(40, 100);
     gameControlSection.add(startGameButton);
     gameControlSection.add(seedInput);
       seedInput.set_max_length(10);
@@ -149,6 +149,8 @@ View::View(Controller *c, Model *m) :
   player2Button.signal_clicked().connect( sigc::mem_fun( *this, &View::player2ButtonClicked ) );
   player3Button.signal_clicked().connect( sigc::mem_fun( *this, &View::player3ButtonClicked ) );
   player4Button.signal_clicked().connect( sigc::mem_fun( *this, &View::player4ButtonClicked ) );
+
+  // Associate button clicked
 
 
 
@@ -260,6 +262,8 @@ void View::update() {
       }
       this->handCards[i]->set(cardImage);
     }
+
+
   }
 
 
