@@ -49,26 +49,22 @@ private:
       Gtk::VBox player1Box;
         Gtk::Label points1;
         Gtk::Label discards1;
-        Gtk::Button rage1Button;
-        Gtk::Button player1TypeButton;
+        Gtk::Button player1Button;
     Gtk::Frame player2Frame;
       Gtk::VBox player2Box;
         Gtk::Label points2;
         Gtk::Label discards2;
-        Gtk::Button rage2Button;
-        Gtk::Button player2TypeButton;
+        Gtk::Button player2Button;
     Gtk::Frame player3Frame;
       Gtk::VBox player3Box;
         Gtk::Label points3;
         Gtk::Label discards3;
-        Gtk::Button rage3Button;
-        Gtk::Button player3TypeButton;
+        Gtk::Button player3Button;
     Gtk::Frame player4Frame;
       Gtk::VBox player4Box;
         Gtk::Label points4;
         Gtk::Label discards4;
-        Gtk::Button rage4Button;
-        Gtk::Button player4TypeButton;
+        Gtk::Button player4Button;
 
   Gtk::Frame yourHandSection;
     Gtk::HBox yourHandGrid;
@@ -90,15 +86,10 @@ private:
 	void startGameButtonClicked();
 	void endCurrentGameButtonClicked();
 
-  void rage1ButtonClicked();
-  void rage2ButtonClicked();
-  void rage3ButtonClicked();
-  void rage4ButtonClicked();
-
-  void player1TypeButtonClicked();
-  void player2TypeButtonClicked();
-  void player3TypeButtonClicked();
-  void player4TypeButtonClicked();
+  void player1ButtonClicked();
+  void player2ButtonClicked();
+  void player3ButtonClicked();
+  void player4ButtonClicked();
 
 }; // View
 
