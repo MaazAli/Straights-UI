@@ -23,5 +23,10 @@ void Controller::initGame(int seed, std::vector<std::string> types) {
   this->model()->startGame(seed);
 }
 
-void Controller::quit() {}
-void Controller::rageQuit() {}
+void Controller::quit() {
+  this->model()->endGame();
+}
+
+void Controller::rageQuit() {
+  this->model()->rageQuit();
+}

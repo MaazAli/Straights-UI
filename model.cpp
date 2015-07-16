@@ -4,6 +4,7 @@
 #include "computer.h"
 #include <vector>
 #include <string>
+#include <iostream>
 
 Model::Model() : deck_(new Deck{}), unshuffledDeck_(NULL), seed_(0) {
     for (int i = 0; i < 4; i++) {
@@ -102,6 +103,7 @@ void Model::startGame(int seed) {
     this->activePlayerId((this->activePlayerId() - 1) %4);
     this->nextPlayer();
   }
+
 
 }
 

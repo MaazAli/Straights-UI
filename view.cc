@@ -192,22 +192,8 @@ void View::startGameButtonClicked() {
 } // View::nextButtonClicked
 
 void View::endCurrentGameButtonClicked() {
-  std::cout << "end current game bois" << std::endl;
-
   // Quit the game, that should reset state.
-
-  this->player1Button.set_label("Human");
-  this->player2Button.set_label("Human");
-  this->player3Button.set_label("Human");
-  this->player4Button.set_label("Human");
-
-  std::vector<Card*> cardsInHand = this->model_->cardsInHand();
-
-  for (int i = 0; i < cardsInHand.size(); i++) {
-    this->handCards[i]->set(deck.getNullCardImage());
-  }
-
-
+  controller_->quit();
 } // View::resetButtonClicked
 
 void View::player1ButtonClicked() {
@@ -217,11 +203,7 @@ void View::player1ButtonClicked() {
   } else if (label == "Computer") {
     this->player1Button.set_label("Human");
   } else if (label == "RAGE!!!") {
-    std::stringstream ss;
-    ss << "Points: " <<  1;
-    this->points1.set_text(ss.str());
-    this->card[0]->set(this->deck.getCardImage(0, 1));
-    std::cout << "Player 1 tried to rage quit" << std::endl;
+    this->controller_->rageQuit();
   }
 }
 void View::player2ButtonClicked() {
@@ -231,7 +213,7 @@ void View::player2ButtonClicked() {
   } else if (label == "Computer") {
     this->player2Button.set_label("Human");
   } else if (label == "RAGE!!!") {
-    std::cout << "Player 2 tried to rage quit" << std::endl;
+    this->controller_->rageQuit();
   }
 }
 void View::player3ButtonClicked() {
@@ -241,7 +223,7 @@ void View::player3ButtonClicked() {
   } else if (label == "Computer") {
     this->player3Button.set_label("Human");
   } else if (label == "RAGE!!!") {
-    std::cout << "Player 3 tried to rage quit" << std::endl;
+    this->controller_->rageQuit();
   }
 }
 void View::player4ButtonClicked() {
@@ -251,16 +233,33 @@ void View::player4ButtonClicked() {
   } else if (label == "Computer") {
     this->player4Button.set_label("Human");
   } else if (label == "RAGE!!!") {
-    std::cout << "Player 4 tried to rage quit" << std::endl;
+    this->controller_->rageQuit();
   }
 }
 
 void View::update() {
-  std::vector<Card*> cardsInHand = this->model_->cardsInHand();
 
-  // Update the cards in hand, it will change as we move through users
-  for (int i = 0; i < cardsInHand.size(); i++) {
-    this->handCards[i]->set(deck.getCardImage(cardsInHand[i]->getRank(), cardsInHand[i]->getSuit()));
+  // If game has ended, we want to clean up the view to it's default state
+  if (this->model_->gameEnded() == true) {
+    this->player1Button.set_label("Human");
+    this->player2Button.set_label("Human");
+    this->player3Button.set_label("Human");
+    this->player4Button.set_label("Human");
+
+    for (int i = 0; i < 13; i++) {
+      this->handCards[i]->set(deck.getNullCardImage());
+    }
+  } else {
+    std::vector<Card*> cardsInHand = this->model_->cardsInHand();
+
+    // Update the cards in hand, it will change as we move through users
+    for (int i = 0; i < 13; i++) {
+      auto cardImage = deck.getNullCardImage();
+      if (i <= cardsInHand.size()) {
+        cardImage = deck.getCardImage(cardsInHand[i]->getRank(), cardsInHand[i]->getSuit());
+      }
+      this->handCards[i]->set(cardImage);
+    }
   }
 
 
