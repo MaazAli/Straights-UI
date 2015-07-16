@@ -11,7 +11,7 @@ class Model : public Subject {
 public:
   Model();
   ~Model();
-  
+
   // View getters
   std::vector<Card*> cardsInHand();
   std::vector<std::vector<Card*> > cardsOnTable();
@@ -20,7 +20,7 @@ public:
 
   // manipulate model
   void rageQuitActivePlayer();
-  void resetGame(int seed);
+  void resetGame();
   void addPlayer(std::string type);
   void activePlayerId(int id);
   void activePlayerSelectCard(Card* card);
@@ -41,7 +41,7 @@ private:
   // given the hand, what are the legal plays?
   // ehhh, introduces coupling between computer player and model class
   // std::vector<Card*> legalPlaysInHand(std::vector<Card*> hand);
-  
+
   // helper accessors
   Player* activePlayer() const;
   int seed() const;
@@ -50,7 +50,7 @@ private:
   // helper mutators
   //   replaces the active player with p
   void activePlayer(Player* p);
-  
+
   // private members
   std::vector<Player*> players_;
   std::vector<std::vector<Card*> > cardsOnTable_;

@@ -59,7 +59,7 @@ void Model::rageQuitActivePlayer() {
   computer->play(this->legalPlaysInHand(computer->hand()));
 }
 
-void Model::resetGame(int seed) {
+void Model::resetGame() {
   // reset player's hand/discards
   // clear cards on the table
   // reset card order to default, and shuffle the deck
@@ -67,7 +67,7 @@ void Model::resetGame(int seed) {
   // Debug::log("About to reset players.");
   this->resetPlayers();
   this->clearCardsOnTable();
-  this->shuffleDeck(seed);
+  this->shuffleDeck(this->seed());
   this->dealCardsToPlayers();
 }
 
@@ -90,7 +90,7 @@ void Model::activePlayerSelectCard(Card* card) {
   Player* activePlayer = this->activePlayer();
   std::vector<Card*> cardsInHand = activePlayer->hand();
   std::vector<Card*> legalPlays = this->legalPlaysInHand(cardsInHand);
-  
+
   if (legalPlays.size() == 0) {
     // if there were no legal plays in our hand, discard the card
     activePlayer->discardCard(card);
@@ -107,7 +107,7 @@ void Model::activePlayerSelectCard(Card* card) {
 
     if (found) {
       activePlayer->playCard(card);
-      
+
       // card's been played, so we update table
       this->cardsOnTable_[card->getSuit()][card->getRank()] = card;
 
@@ -134,7 +134,7 @@ void Model::resetPlayers() {
 void Model::clearCardsOnTable() {
   // clear all the cards on the table
   auto& tableCards = this->cardsOnTable_;
-  
+
   for (int i = 0; i < tableCards.size(); i++) {
     tableCards.at(i).clear();
     for (int j = 0; j < 13; j++) {
@@ -151,7 +151,7 @@ void Model::shuffleDeck(int seed) {
 void Model::dealCardsToPlayers() {
   Deck* deck = this->deck();
   Card startingCard{SPADE, SEVEN};
-  
+
   for (int i = 0; i < 4; i++) {
     for (int j = 13 * i; j < 13 * (i + 1); j++) {
 
@@ -229,5 +229,3 @@ int Model::seed() const {
 void Model::activePlayer(Player* player) {
   this->players_[this->activePlayerId()] = player;
 }
-
-

@@ -4,8 +4,8 @@
 Controller::Controller(Model* m) : model_(m) {}
 Controller::~Controller(){}
 
-void Controller::startRound(int seed) {
-  this->model()->resetGame(seed);
+void Controller::startRound() {
+  this->model()->resetGame();
 }
 
 Model* Controller::model() const{
@@ -21,6 +21,7 @@ void Controller::initGame(int seed, std::vector<std::string> types) {
   for (auto it = types.begin(); it != types.end(); it++) {
     this->model()->addPlayer(*it);
   }
+  this->startRound();
 }
 
 void Controller::quit() {}

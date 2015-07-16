@@ -8,10 +8,10 @@ class Controller {
 public:
   Controller(Model*);
   virtual ~Controller();
-  
+
   void selectCard(Card* card);
   void initGame(int seed, std::vector<std::string> types);
-  void startRound(int seed);
+  void startRound();
   void quit();
 
   // rage-quits the current player
