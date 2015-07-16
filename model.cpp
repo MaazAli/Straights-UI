@@ -23,7 +23,7 @@ std::vector<Card*> Model::cardsInHand(){
   if (this->players_.size() == 0) {
     return std::vector<Card*>();
   }
-  
+
   return this->activePlayer()->hand();
 }
 
@@ -47,7 +47,7 @@ std::vector<std::vector<Card*> > Model::discards() {
   return discards;
 }
 
-bool Model::gameEnded() {
+bool Model::gameEnded() const {
   return this->gameEnded_;
 }
 
@@ -71,19 +71,19 @@ void Model::rageQuit() {
 }
 
 void Model::startRound() {
-  
+
   this->resetPlayers(false);
   this->clearCardsOnTable();
   this->shuffleDeck();
   this->dealCardsToPlayers();
 
   this->notify();
-  
+
   if (this->activePlayer()->type() == "Computer") {
     this->activePlayerId((this->activePlayerId() - 1) %4);
     this->nextPlayer();
   }
-  
+
 }
 
 void Model::startGame(int seed) {
@@ -97,7 +97,7 @@ void Model::startGame(int seed) {
   this->dealCardsToPlayers();
 
   this->notify();
-  
+
   if (this->activePlayer()->type() == "Computer") {
     this->activePlayerId((this->activePlayerId() - 1) %4);
     this->nextPlayer();
@@ -112,7 +112,7 @@ void Model::endGame() {
   for (auto it = players.begin(); it != players.end(); it++) {
     delete *it;
   }
-  
+
   this->players_.clear();
 
   // everything else
@@ -173,7 +173,7 @@ void Model::selectCard(Card* card) {
 
   // notify that things are done
   this->notify();
-    
+
   // move on to the next player
   this->nextPlayer();
 }
@@ -235,7 +235,7 @@ void Model::dealCardsToPlayers() {
 }
 
 /*
-* TODO Figure out what happens when the player's hand is empty. Do we toggle something in the model (roundOver)? how does the view know? 
+* TODO Figure out what happens when the player's hand is empty. Do we toggle something in the model (roundOver)? how does the view know?
 */
 
 void Model::nextPlayer() {
@@ -249,7 +249,7 @@ void Model::nextPlayer() {
     this->notify();
     return;
   }
-  
+
   if (player->type() == "Computer") {
     Computer* computer = (Computer*)player;
     computer->play(this->legalPlaysInHand(computer->hand()));
