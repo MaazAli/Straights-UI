@@ -59,7 +59,7 @@ void Model::rageQuitActivePlayer() {
   computer->play(this->legalPlaysInHand(computer->hand()));
 }
 
-void Model::resetGame() {
+void Model::startRound() {
   // reset player's hand/discards
   // clear cards on the table
   // reset card order to default, and shuffle the deck
@@ -69,12 +69,14 @@ void Model::resetGame() {
   this->clearCardsOnTable();
   this->shuffleDeck(this->seed());
   this->dealCardsToPlayers();
+  
+  this->notify();
 }
 
 void Model::addPlayer(std::string type) {
-  if (type == "h") {
+  if (type == "Human") {
     this->players_.push_back(new Human{});
-  } else if (type == "c") {
+  } else if (type == "Computer") {
     this->players_.push_back(new Computer{});
   }
 }

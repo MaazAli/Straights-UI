@@ -20,7 +20,7 @@ public:
 
   // manipulate model
   void rageQuitActivePlayer();
-  void resetGame();
+  void startRound();
   void addPlayer(std::string type);
   void activePlayerId(int id);
   void activePlayerSelectCard(Card* card);

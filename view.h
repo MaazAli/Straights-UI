@@ -17,12 +17,13 @@
 #include "deckgui.h"
 #include "controller.h"
 #include "model.h"
+#include "observer.h"
 
-class View : public Gtk::Window {
+class View : public Gtk::Window, public Observer {
 public:
         View(Controller*, Model*);
 	virtual ~View();
-	// virtual void update();	// Observer Pattern: concrete update() method
+	virtual void update();	// Observer Pattern: concrete update() method
 
 private:
 

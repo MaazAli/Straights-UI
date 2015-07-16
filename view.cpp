@@ -11,6 +11,10 @@
 #include "view.h"
 #include <iostream>
 #include <sstream>
+#include <string>
+#include <vector>
+#include "card.h"
+#include "observer.h"
 
 // Creates buttons with labels. Sets butBox elements to have the same size,
 // with 10 pixels between widgets
@@ -161,7 +165,7 @@ View::View(Controller *c, Model *m) :
 	show_all();
 
 	// Register view as observer of model
-	// model_->subscribe(this);
+	model_->subscribe(this);
 
 } // View::View
 
@@ -173,10 +177,25 @@ View::~View() {}
 
 void View::startGameButtonClicked() {
   int seed = (int)std::strtol(this->seedInput.get_text().c_str(), NULL, 10);
-  std::cout << "Start game bois "
-            << seed
-            << std::endl;
-  // controller_->nextButtonClicked();
+  std::string type1 = this->player1TypeButton.get_label();
+  std::string type2 = this->player1TypeButton.get_label();
+  std::string type3 = this->player1TypeButton.get_label();
+  std::string type4 = this->player1TypeButton.get_label();
+
+  std::vector<std::string> playerTypes;
+
+  playerTypes.push_back(type1);
+  playerTypes.push_back(type2);
+  playerTypes.push_back(type3);
+  playerTypes.push_back(type4);
+
+  this->controller_->initGame(seed, playerTypes);
+
+  std::vector<Card*> cardsInHand = this->model_->cardsInHand();
+
+  for (int i = 0; i < cardsInHand.size(); i++) {
+    this->handCards[i]->set(deck.getCardImage(cardsInHand[i]->getRank(), cardsInHand[i]->getSuit()));
+  }
 } // View::nextButtonClicked
 
 void View::endCurrentGameButtonClicked() {
@@ -232,4 +251,8 @@ void View::player4TypeButtonClicked() {
   } else {
     this->player4TypeButton.set_label("Human");
   }
+}
+
+void View::update() {
+  std::cout << "Shit was updated?" << std::endl;
 }

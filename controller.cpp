@@ -5,7 +5,7 @@ Controller::Controller(Model* m) : model_(m) {}
 Controller::~Controller(){}
 
 void Controller::startRound() {
-  this->model()->resetGame();
+  this->model()->startRound();
 }
 
 Model* Controller::model() const{
