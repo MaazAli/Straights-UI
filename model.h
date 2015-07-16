@@ -101,7 +101,6 @@ private:
   std::vector<std::vector<Card*> > cardsOnTable_;
   int activePlayerId_;
   Deck* deck_;
-  Deck* unshuffledDeck_;
   int seed_;
 
   // state members
