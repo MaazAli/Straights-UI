@@ -33,14 +33,10 @@ View::View(Controller *c, Model *m) :
   player2Box(true, 10),
   player3Box(true, 10),
   player4Box(true, 10),
-  player1TypeButton("Human"),
-  player2TypeButton("Human"),
-  player3TypeButton("Human"),
-  player4TypeButton("Human"),
-  rage1Button("RAGE!!!"),
-  rage2Button("RAGE!!!"),
-  rage3Button("RAGE!!!"),
-  rage4Button("RAGE!!!"),
+  player1Button("Human"),
+  player2Button("Human"),
+  player3Button("Human"),
+  player4Button("Human"),
   points1("Points: 0"),
   points2("Points: 0"),
   points3("Points: 0"),
@@ -80,28 +76,28 @@ View::View(Controller *c, Model *m) :
     playerSection.add(player1Frame);
       player1Frame.set_label("Player 1");
       player1Frame.add(player1Box);
-        player1Box.add(player1TypeButton);
+        player1Box.add(player1Button);
         player1Box.add(points1);
         player1Box.add(discards1);
 
     playerSection.add(player2Frame);
       player2Frame.set_label("Player 2");
       player2Frame.add(player2Box);
-        player2Box.add(player2TypeButton);
+        player2Box.add(player2Button);
         player2Box.add(points2);
         player2Box.add(discards2);
 
     playerSection.add(player3Frame);
       player3Frame.set_label("Player 3");
       player3Frame.add(player3Box);
-        player3Box.add(player3TypeButton);
+        player3Box.add(player3Button);
         player3Box.add(points3);
         player3Box.add(discards3);
 
     playerSection.add(player4Frame);
       player4Frame.set_label("Player 4");
       player4Frame.add(player4Box);
-        player4Box.add(player4TypeButton);
+        player4Box.add(player4Button);
         player4Box.add(points4);
         player4Box.add(discards4);
 
@@ -149,15 +145,10 @@ View::View(Controller *c, Model *m) :
 	startGameButton.signal_clicked().connect( sigc::mem_fun( *this, &View::startGameButtonClicked ) );
 	endCurrentGameButton.signal_clicked().connect( sigc::mem_fun( *this, &View::endCurrentGameButtonClicked ) );
 
-  rage1Button.signal_clicked().connect( sigc::mem_fun( *this, &View::rage1ButtonClicked ) );
-  rage2Button.signal_clicked().connect( sigc::mem_fun( *this, &View::rage2ButtonClicked ) );
-  rage3Button.signal_clicked().connect( sigc::mem_fun( *this, &View::rage3ButtonClicked ) );
-  rage4Button.signal_clicked().connect( sigc::mem_fun( *this, &View::rage4ButtonClicked ) );
-
-  player1TypeButton.signal_clicked().connect( sigc::mem_fun( *this, &View::player1TypeButtonClicked ) );
-  player2TypeButton.signal_clicked().connect( sigc::mem_fun( *this, &View::player2TypeButtonClicked ) );
-  player3TypeButton.signal_clicked().connect( sigc::mem_fun( *this, &View::player3TypeButtonClicked ) );
-  player4TypeButton.signal_clicked().connect( sigc::mem_fun( *this, &View::player4TypeButtonClicked ) );
+  player1Button.signal_clicked().connect( sigc::mem_fun( *this, &View::player1ButtonClicked ) );
+  player2Button.signal_clicked().connect( sigc::mem_fun( *this, &View::player2ButtonClicked ) );
+  player3Button.signal_clicked().connect( sigc::mem_fun( *this, &View::player3ButtonClicked ) );
+  player4Button.signal_clicked().connect( sigc::mem_fun( *this, &View::player4ButtonClicked ) );
 
 
 
@@ -177,10 +168,10 @@ View::~View() {}
 
 void View::startGameButtonClicked() {
   int seed = (int)std::strtol(this->seedInput.get_text().c_str(), NULL, 10);
-  std::string type1 = this->player1TypeButton.get_label();
-  std::string type2 = this->player1TypeButton.get_label();
-  std::string type3 = this->player1TypeButton.get_label();
-  std::string type4 = this->player1TypeButton.get_label();
+  std::string type1 = this->player1Button.get_label();
+  std::string type2 = this->player2Button.get_label();
+  std::string type3 = this->player3Button.get_label();
+  std::string type4 = this->player4Button.get_label();
 
   std::vector<std::string> playerTypes;
 
@@ -189,70 +180,90 @@ void View::startGameButtonClicked() {
   playerTypes.push_back(type3);
   playerTypes.push_back(type4);
 
+  // Tell the controller to initialize the game
   this->controller_->initGame(seed, playerTypes);
 
-  std::vector<Card*> cardsInHand = this->model_->cardsInHand();
+  // Update the player specific buttons to rage
+  this->player1Button.set_label("RAGE!!!");
+  this->player2Button.set_label("RAGE!!!");
+  this->player3Button.set_label("RAGE!!!");
+  this->player4Button.set_label("RAGE!!!");
 
-  for (int i = 0; i < cardsInHand.size(); i++) {
-    this->handCards[i]->set(deck.getCardImage(cardsInHand[i]->getRank(), cardsInHand[i]->getSuit()));
-  }
 } // View::nextButtonClicked
 
 void View::endCurrentGameButtonClicked() {
   std::cout << "end current game bois" << std::endl;
-  // controller_->resetButtonClicked();
+
+  // Quit the game, that should reset state.
+
+  this->player1Button.set_label("Human");
+  this->player2Button.set_label("Human");
+  this->player3Button.set_label("Human");
+  this->player4Button.set_label("Human");
+
+  std::vector<Card*> cardsInHand = this->model_->cardsInHand();
+
+  for (int i = 0; i < cardsInHand.size(); i++) {
+    this->handCards[i]->set(deck.getNullCardImage());
+  }
+
+
 } // View::resetButtonClicked
 
-void View::rage1ButtonClicked() {
-  std::stringstream ss;
-  ss << "Points: " <<  1;
-  this->points1.set_text(ss.str());
-  this->card[0]->set(this->deck.getCardImage(0, 1));
-  std::cout << "Player 1 tried to rage quit" << std::endl;
-
-}
-
-void View::rage2ButtonClicked() {
-  std::cout << "Player 2 tried to rage quit" << std::endl;
-}
-
-void View::rage3ButtonClicked() {
-  std::cout << "Player 3 tried to rage quit" << std::endl;
-}
-
-void View::rage4ButtonClicked() {
-  std::cout << "Player 4 tried to rage quit" << std::endl;
-}
-
-void View::player1TypeButtonClicked() {
-  if (this->player1TypeButton.get_label() == "Human") {
-    this->player1TypeButton.set_label("Computer");
-  } else {
-    this->player1TypeButton.set_label("Human");
+void View::player1ButtonClicked() {
+  std::string label = this->player1Button.get_label();
+  if (label == "Human") {
+    this->player1Button.set_label("Computer");
+  } else if (label == "Computer") {
+    this->player1Button.set_label("Human");
+  } else if (label == "RAGE!!!") {
+    std::stringstream ss;
+    ss << "Points: " <<  1;
+    this->points1.set_text(ss.str());
+    this->card[0]->set(this->deck.getCardImage(0, 1));
+    std::cout << "Player 1 tried to rage quit" << std::endl;
   }
 }
-void View::player2TypeButtonClicked() {
-  if (this->player2TypeButton.get_label() == "Human") {
-    this->player2TypeButton.set_label("Computer");
-  } else {
-    this->player2TypeButton.set_label("Human");
+void View::player2ButtonClicked() {
+  std::string label = this->player2Button.get_label();
+  if (label == "Human") {
+    this->player2Button.set_label("Computer");
+  } else if (label == "Computer") {
+    this->player2Button.set_label("Human");
+  } else if (label == "RAGE!!!") {
+    std::cout << "Player 2 tried to rage quit" << std::endl;
   }
 }
-void View::player3TypeButtonClicked() {
-  if (this->player3TypeButton.get_label() == "Human") {
-    this->player3TypeButton.set_label("Computer");
-  } else {
-    this->player3TypeButton.set_label("Human");
+void View::player3ButtonClicked() {
+  std::string label = this->player3Button.get_label();
+  if (label == "Human") {
+    this->player3Button.set_label("Computer");
+  } else if (label == "Computer") {
+    this->player3Button.set_label("Human");
+  } else if (label == "RAGE!!!") {
+    std::cout << "Player 3 tried to rage quit" << std::endl;
   }
 }
-void View::player4TypeButtonClicked() {
-  if (this->player4TypeButton.get_label() == "Human") {
-    this->player4TypeButton.set_label("Computer");
-  } else {
-    this->player4TypeButton.set_label("Human");
+void View::player4ButtonClicked() {
+  std::string label = this->player4Button.get_label();
+  if (label == "Human") {
+    this->player4Button.set_label("Computer");
+  } else if (label == "Computer") {
+    this->player4Button.set_label("Human");
+  } else if (label == "RAGE!!!") {
+    std::cout << "Player 4 tried to rage quit" << std::endl;
   }
 }
 
 void View::update() {
-  std::cout << "Shit was updated?" << std::endl;
+  std::vector<Card*> cardsInHand = this->model_->cardsInHand();
+
+  // Update the cards in hand, it will change as we move through users
+  for (int i = 0; i < cardsInHand.size(); i++) {
+    this->handCards[i]->set(deck.getCardImage(cardsInHand[i]->getRank(), cardsInHand[i]->getSuit()));
+  }
+
+
+
+  std::cout << "stuff was updated?" << std::endl;
 }
