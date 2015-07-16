@@ -29,10 +29,14 @@ View::View(Controller *c, Model *m) :
   player2Box(true, 10),
   player3Box(true, 10),
   player4Box(true, 10),
-  rage1Button("RAGEE!!"),
-  rage2Button("RAGEE!!"),
-  rage3Button("RAGEE!!"),
-  rage4Button("RAGEE!!"),
+  player1TypeButton("Human"),
+  player2TypeButton("Human"),
+  player3TypeButton("Human"),
+  player4TypeButton("Human"),
+  rage1Button("RAGE!!!"),
+  rage2Button("RAGE!!!"),
+  rage3Button("RAGE!!!"),
+  rage4Button("RAGE!!!"),
   points1("Points: 0"),
   points2("Points: 0"),
   points3("Points: 0"),
@@ -72,28 +76,28 @@ View::View(Controller *c, Model *m) :
     playerSection.add(player1Frame);
       player1Frame.set_label("Player 1");
       player1Frame.add(player1Box);
-        player1Box.add(rage1Button);
+        player1Box.add(player1TypeButton);
         player1Box.add(points1);
         player1Box.add(discards1);
 
     playerSection.add(player2Frame);
       player2Frame.set_label("Player 2");
       player2Frame.add(player2Box);
-        player2Box.add(rage2Button);
+        player2Box.add(player2TypeButton);
         player2Box.add(points2);
         player2Box.add(discards2);
 
     playerSection.add(player3Frame);
       player3Frame.set_label("Player 3");
       player3Frame.add(player3Box);
-        player3Box.add(rage3Button);
+        player3Box.add(player3TypeButton);
         player3Box.add(points3);
         player3Box.add(discards3);
 
     playerSection.add(player4Frame);
       player4Frame.set_label("Player 4");
       player4Frame.add(player4Box);
-        player4Box.add(rage4Button);
+        player4Box.add(player4TypeButton);
         player4Box.add(points4);
         player4Box.add(discards4);
 
@@ -146,6 +150,11 @@ View::View(Controller *c, Model *m) :
   rage3Button.signal_clicked().connect( sigc::mem_fun( *this, &View::rage3ButtonClicked ) );
   rage4Button.signal_clicked().connect( sigc::mem_fun( *this, &View::rage4ButtonClicked ) );
 
+  player1TypeButton.signal_clicked().connect( sigc::mem_fun( *this, &View::player1TypeButtonClicked ) );
+  player2TypeButton.signal_clicked().connect( sigc::mem_fun( *this, &View::player2TypeButtonClicked ) );
+  player3TypeButton.signal_clicked().connect( sigc::mem_fun( *this, &View::player3TypeButtonClicked ) );
+  player4TypeButton.signal_clicked().connect( sigc::mem_fun( *this, &View::player4TypeButtonClicked ) );
+
 
 
 	// The final step is to display the buttons (they display themselves)
@@ -194,4 +203,33 @@ void View::rage3ButtonClicked() {
 
 void View::rage4ButtonClicked() {
   std::cout << "Player 4 tried to rage quit" << std::endl;
+}
+
+void View::player1TypeButtonClicked() {
+  if (this->player1TypeButton.get_label() == "Human") {
+    this->player1TypeButton.set_label("Computer");
+  } else {
+    this->player1TypeButton.set_label("Human");
+  }
+}
+void View::player2TypeButtonClicked() {
+  if (this->player2TypeButton.get_label() == "Human") {
+    this->player2TypeButton.set_label("Computer");
+  } else {
+    this->player2TypeButton.set_label("Human");
+  }
+}
+void View::player3TypeButtonClicked() {
+  if (this->player3TypeButton.get_label() == "Human") {
+    this->player3TypeButton.set_label("Computer");
+  } else {
+    this->player3TypeButton.set_label("Human");
+  }
+}
+void View::player4TypeButtonClicked() {
+  if (this->player4TypeButton.get_label() == "Human") {
+    this->player4TypeButton.set_label("Computer");
+  } else {
+    this->player4TypeButton.set_label("Human");
+  }
 }

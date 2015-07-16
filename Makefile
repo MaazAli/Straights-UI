@@ -5,7 +5,7 @@ DEPENDS = ${OBJECTS:.o=.d}
 EXEC = straights
 
 ${EXEC} : ${OBJECTS}
-	${CXX} ${CXXFLAGS} ${OBJECTS} -o ${EXEC}
+	${CXX} ${OBJECTS} ${CXXFLAGS} -o ${EXEC}
 
 clean :
 	rm -rf ${DEPENDS} ${OBJECTS} ${EXEC}
