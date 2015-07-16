@@ -5,7 +5,7 @@
 #include <vector>
 #include <string>
 
-Model::Model() : deck_(new Deck{}) {
+Model::Model() : deck_(new Deck{}), seed_(0) {
     for (int i = 0; i < 4; i++) {
         this->cardsOnTable_.push_back(std::vector<Card*>(13, NULL));
     }
@@ -119,6 +119,10 @@ void Model::activePlayerSelectCard(Card* card) {
   }
 }
 
+void Model::seed(int seed) {
+  this->seed_ = seed;
+}
+
 // Private Methods
 void Model::resetPlayers() {
   std::vector<Player*>& players = this->players_;
@@ -214,6 +218,10 @@ int Model::activePlayerId() const {
 
 Player* Model::activePlayer() const {
   return this->players_.at(this->activePlayerId());
+}
+
+int Model::seed() const {
+  return this->seed_;
 }
 
 // helper mutators

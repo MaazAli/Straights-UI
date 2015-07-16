@@ -2,6 +2,7 @@
 #define CONTROLLER_H
 #include "card.h"
 #include "model.h"
+#include <vector>
 
 class Controller {
 public:
@@ -9,7 +10,7 @@ public:
   virtual ~Controller();
   
   void selectCard(Card* card);
-  // void startGame(int seed);
+  void initGame(int seed, std::vector<std::string> types);
   void startRound(int seed);
   void quit();
 

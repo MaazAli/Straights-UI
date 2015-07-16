@@ -24,6 +24,7 @@ public:
   void addPlayer(std::string type);
   void activePlayerId(int id);
   void activePlayerSelectCard(Card* card);
+  void seed(int seed);
 
   // temporary public method
   std::vector<Card*> legalPlaysInHand(std::vector<Card*> hand) const;
@@ -43,6 +44,7 @@ private:
   
   // helper accessors
   Player* activePlayer() const;
+  int seed() const;
   Deck* deck() const;
 
   // helper mutators
@@ -55,6 +57,7 @@ private:
   std::vector<int> points_;
   int activePlayerId_;
   Deck* deck_;
+  int seed_;
 };
 
 #endif
