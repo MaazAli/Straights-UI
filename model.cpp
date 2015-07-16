@@ -5,18 +5,25 @@
 #include <vector>
 #include <string>
 
-Model::Model() : deck_(new Deck{}), seed_(0) {
+Model::Model() : deck_(new Deck{}), unshuffledDeck_(NULL), seed_(0) {
     for (int i = 0; i < 4; i++) {
         this->cardsOnTable_.push_back(std::vector<Card*>(13, NULL));
     }
+
+    this->unshuffledDeck_ = new Deck(*this->deck());
 }
 
 Model::~Model() {
   delete this->deck_;
 }
 
-// View Getters: these return copies of internal data structures!
+// View Getters:
+//   - these return copies of internal data structures!
 std::vector<Card*> Model::cardsInHand(){
+  if (this->players_.size() == 0) {
+    return std::vector<Card*>();
+  }
+  
   return this->activePlayer()->hand();
 }
 
@@ -40,9 +47,12 @@ std::vector<std::vector<Card*> > Model::discards() {
   return discards;
 }
 
+bool Model::gameEnded() {
+  return this->gameEnded_;
+}
 
 // manipulate model
-void Model::rageQuitActivePlayer() {
+void Model::rageQuit() {
   Human* human = (Human*)this->activePlayer();
   Computer* computer = new Computer();
 
@@ -55,21 +65,61 @@ void Model::rageQuitActivePlayer() {
   // no need for human
   delete human;
 
-  // play computer's move
-  computer->play(this->legalPlaysInHand(computer->hand()));
+  // try this player's turn again
+  this->activePlayerId((this->activePlayerId() - 1)%4);
+  this->nextPlayer();
 }
 
 void Model::startRound() {
-  // reset player's hand/discards
-  // clear cards on the table
-  // reset card order to default, and shuffle the deck
-  // deal cards: player i gets [(i - 1) * 13, i * 13 - 1] cards
-  // Debug::log("About to reset players.");
-  this->resetPlayers();
-  this->clearCardsOnTable();
-  this->shuffleDeck(this->seed());
-  this->dealCardsToPlayers();
   
+  this->resetPlayers(false);
+  this->clearCardsOnTable();
+  this->shuffleDeck();
+  this->dealCardsToPlayers();
+
+  this->notify();
+  
+  if (this->activePlayer()->type() == "Computer") {
+    this->activePlayerId((this->activePlayerId() - 1) %4);
+    this->nextPlayer();
+  }
+  
+}
+
+void Model::startGame(int seed) {
+  this->gameEnded_ = false;
+  this->resetPlayers(true);
+  this->clearCardsOnTable();
+  this->unshuffleDeck();
+  this->seed(seed);
+  this->shuffleDeck();
+  // sets active player too
+  this->dealCardsToPlayers();
+
+  this->notify();
+  
+  if (this->activePlayer()->type() == "Computer") {
+    this->activePlayerId((this->activePlayerId() - 1) %4);
+    this->nextPlayer();
+  }
+
+}
+
+void Model::endGame() {
+
+  // delete all the players
+  std::vector<Player*>& players = this->players_;
+  for (auto it = players.begin(); it != players.end(); it++) {
+    delete *it;
+  }
+  
+  this->players_.clear();
+
+  // everything else
+  this->unshuffleDeck();
+  this->activePlayerId(0);
+  this->seed(0);
+  this->gameEnded_ = true;
   this->notify();
 }
 
@@ -85,10 +135,11 @@ void Model::activePlayerId(int id) {
   this->activePlayerId_ = id;
 }
 
+
 // precondition:
 //   - card is in the hand
 //   - card is on the heap and can be accessed using the deck
-void Model::activePlayerSelectCard(Card* card) {
+void Model::selectCard(Card* card) {
   Player* activePlayer = this->activePlayer();
   std::vector<Card*> cardsInHand = activePlayer->hand();
   std::vector<Card*> legalPlays = this->legalPlaysInHand(cardsInHand);
@@ -119,6 +170,12 @@ void Model::activePlayerSelectCard(Card* card) {
       throw "Screwed up by trying to discard a card when you could play a legal card";
     }
   }
+
+  // notify that things are done
+  this->notify();
+    
+  // move on to the next player
+  this->nextPlayer();
 }
 
 void Model::seed(int seed) {
@@ -126,10 +183,14 @@ void Model::seed(int seed) {
 }
 
 // Private Methods
-void Model::resetPlayers() {
+void Model::resetPlayers(bool hardReset) {
   std::vector<Player*>& players = this->players_;
   for (auto it = players.begin(); it != players.end(); it++) {
     (*it)->cleanup();
+
+    if (hardReset) {
+      (*it)->clearPoints();
+    }
   }
 }
 
@@ -145,8 +206,12 @@ void Model::clearCardsOnTable() {
   }
 }
 
-void Model::shuffleDeck(int seed) {
-  this->deck()->shuffle(seed);
+void Model::shuffleDeck() {
+  this->deck()->shuffle(this->seed());
+}
+
+void Model::unshuffleDeck() {
+  (*this->deck_) = *(this->unshuffledDeck_);
 }
 
 // distribute the deck's cards to players
@@ -167,6 +232,32 @@ void Model::dealCardsToPlayers() {
       this->players_.at(i)->takeCard(&card);
     }
   }
+}
+
+/*
+* TODO Figure out what happens when the player's hand is empty. Do we toggle something in the model (roundOver)? how does the view know? 
+*/
+
+void Model::nextPlayer() {
+  this->activePlayerId((this->activePlayerId() + 1)% 4);
+  Player* player = this->activePlayer();
+
+  // check if this player has any cards to play
+  // if not, end the turn and notify
+  if (player->hand().size() == 0) {
+
+    this->notify();
+    return;
+  }
+  
+  if (player->type() == "Computer") {
+    Computer* computer = (Computer*)player;
+    computer->play(this->legalPlaysInHand(computer->hand()));
+    this->notify();
+    this->nextPlayer();
+  }
+
+  this->notify();
 }
 
 // determine the legal plays in hand

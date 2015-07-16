@@ -45,6 +45,10 @@ void Player::cleanup() {
   this->discards_.clear();
 }
 
+void Player::clearPoints() {
+  this->points(0);
+}
+
 void Player::removeFromHand(Card* card) {
   for (auto it = this->hand_.begin(); it != this->hand_.end(); it++) {
     if (*(*it) == (*card)) {

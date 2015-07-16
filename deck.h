@@ -5,11 +5,11 @@
 
 class Deck {
 public:
-    Deck();
-    Card& cardAt(int index) const;
-    void shuffle(int seed);
+  Deck();
+  Card& cardAt(int index) const;
+  void shuffle(int seed);
 private:
-    std::vector<Card*> cards_;
+  std::vector<Card*> cards_;
 };
 
 #endif

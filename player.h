@@ -18,6 +18,10 @@ public:
   void takeCard(Card* card);
   void discardCard(Card* card);
   void cleanup();
+  void clearPoints();
+
+  // every child needs to identify its type
+  virtual std::string type() const = 0; 
 
 protected:
   // since descendents can change types, we provide setters

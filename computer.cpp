@@ -22,3 +22,7 @@ void Computer::play(std::vector<Card*> legalPlays) {
     this->playCard(legalPlays.at(0));
   }
 }
+
+std::string Computer::type() const {
+  return "Computer";
+}

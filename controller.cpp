@@ -13,15 +13,14 @@ Model* Controller::model() const{
 }
 
 void Controller::selectCard(Card* card) {
-  this->model()->activePlayerSelectCard(card);
+  this->model()->selectCard(card);
 }
 
 void Controller::initGame(int seed, std::vector<std::string> types) {
-  this->model()->seed(seed);
   for (auto it = types.begin(); it != types.end(); it++) {
     this->model()->addPlayer(*it);
   }
-  this->startRound();
+  this->model()->startGame(seed);
 }
 
 void Controller::quit() {}
