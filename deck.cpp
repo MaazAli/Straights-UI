@@ -6,7 +6,9 @@
 Deck::Deck() {
   for (int suit = 0; suit < 4; suit++) {
     for (int rank = 0; rank < 13; rank++) {
-      this->cards_.push_back(new Card{(Suit)suit, (Rank)rank});
+      Card* card = new Card{(Suit)suit, (Rank)rank};
+      this->cards_.push_back(card);
+      this->orderedCards_.push_back(card);
     }
   }
 }
@@ -26,4 +28,8 @@ void Deck::shuffle(int seed) {
     cards_[n] = cards_[k];
     cards_[k] = c;
   }
+}
+
+void Deck::unshuffle() {
+  this->cards_ = this->orderedCards_;
 }

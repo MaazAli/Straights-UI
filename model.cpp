@@ -6,12 +6,10 @@
 #include <string>
 #include <iostream>
 
-Model::Model() : deck_(new Deck{}), unshuffledDeck_(NULL), seed_(0) {
+Model::Model() : deck_(new Deck{}), seed_(0) {
     for (int i = 0; i < 4; i++) {
         this->cardsOnTable_.push_back(std::vector<Card*>(13, NULL));
     }
-
-    this->unshuffledDeck_ = new Deck(*this->deck());
 }
 
 Model::~Model() {
@@ -91,9 +89,27 @@ void Model::startGame(int seed) {
   this->gameEnded_ = false;
   this->resetPlayers(true);
   this->clearCardsOnTable();
+
+  for (int i = 0; i < 52; i++) {
+    std::cout << this->deck_->cardAt(i) << " ";
+  }
+  std::cout << std::endl;
+  
   this->unshuffleDeck();
+
+  for (int i = 0; i < 52; i++) {
+    std::cout << this->deck_->cardAt(i) << " ";
+  }
+  std::cout << std::endl;
+  
   this->seed(seed);
   this->shuffleDeck();
+
+  for (int i = 0; i < 52; i++) {
+    std::cout << this->deck_->cardAt(i) << " ";
+  }
+  std::cout << std::endl;
+  
   // sets active player too
   this->dealCardsToPlayers();
 
@@ -213,7 +229,7 @@ void Model::shuffleDeck() {
 }
 
 void Model::unshuffleDeck() {
-  (*this->deck_) = *(this->unshuffledDeck_);
+  this->deck()->unshuffle();
 }
 
 // distribute the deck's cards to players
