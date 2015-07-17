@@ -204,7 +204,7 @@ void View::startGameButtonClicked() {
 
 void View::endCurrentGameButtonClicked() {
   // Quit the game, that should reset state.
-  controller_->quit();
+  this->controller_->quit();
 } // View::resetButtonClicked
 
 void View::player1ButtonClicked() {
@@ -266,7 +266,8 @@ void View::update() {
 
   // Round ended, display dialog box with some statistics and prompt
   // user to start a new round
-  if (gameEnded) {
+  if (gameEnded && this->gameEndedAlreadyGeez == false) {
+    this->gameEndedAlreadyGeez = true;
     this->gameEndedDialog();
     this->endCurrentGameButtonClicked();
   } else if (roundEnded) {
@@ -319,7 +320,8 @@ void View::update() {
   this->discards4.set_label(View::intWithString("Discards: ", (gameEnded) ? 0 : discards[3].size()));
 
   // If game has ended, we want to bring in some buttons to their default state
-  if (gameEnded) {
+  if (gameEnded && this->gameEndedAlreadyGeez == false) {
+    this->gameEndedAlreadyGeez = true;
     this->player1Button.set_label("Human");
     this->player2Button.set_label("Human");
     this->player3Button.set_label("Human");

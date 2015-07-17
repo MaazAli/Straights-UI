@@ -98,6 +98,10 @@ private:
   void roundEndedDialog();
   void gameEndedDialog();
 
+
+  // Variable to prevent infinite loop when game ends
+  bool gameEndedAlreadyGeez;
+
 }; // View
 
 #endif
