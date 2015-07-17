@@ -93,6 +93,8 @@ private:
   // helper mutators
   //   replaces the active player with p
   void activePlayer(Player* p);
+  void decrementActivePlayerId();
+  void incrementActivePlayerId();
   void seed(int seed);
 
 

@@ -4,7 +4,7 @@
 #include "computer.h"
 #include <vector>
 #include <string>
-#include <iostream>
+#include <cassert>
 
 Model::Model() : deck_(new Deck{}), seed_(0) {
     for (int i = 0; i < 4; i++) {
@@ -52,6 +52,9 @@ bool Model::gameEnded() const {
 
 // manipulate model
 void Model::rageQuit() {
+  assert(this->players_.size() != 0);
+  assert(this->activePlayer()->type() == "Human");
+  
   Human* human = (Human*)this->activePlayer();
   Computer* computer = new Computer();
 
@@ -65,7 +68,7 @@ void Model::rageQuit() {
   delete human;
 
   // try this player's turn again
-  this->activePlayerId((this->activePlayerId() - 1)%4);
+  this->decrementActivePlayerId();
   this->nextPlayer();
 }
 
@@ -79,7 +82,7 @@ void Model::startRound() {
   this->notify();
 
   if (this->activePlayer()->type() == "Computer") {
-    this->activePlayerId((this->activePlayerId() - 1) %4);
+    this->decrementActivePlayerId();
     this->nextPlayer();
   }
 
@@ -89,37 +92,18 @@ void Model::startGame(int seed) {
   this->gameEnded_ = false;
   this->resetPlayers(true);
   this->clearCardsOnTable();
-
-  for (int i = 0; i < 52; i++) {
-    std::cout << this->deck_->cardAt(i) << " ";
-  }
-  std::cout << std::endl;
-  
   this->unshuffleDeck();
-
-  for (int i = 0; i < 52; i++) {
-    std::cout << this->deck_->cardAt(i) << " ";
-  }
-  std::cout << std::endl;
-  
   this->seed(seed);
   this->shuffleDeck();
-
-  for (int i = 0; i < 52; i++) {
-    std::cout << this->deck_->cardAt(i) << " ";
-  }
-  std::cout << std::endl;
-  
   // sets active player too
   this->dealCardsToPlayers();
 
   this->notify();
 
   if (this->activePlayer()->type() == "Computer") {
-    this->activePlayerId((this->activePlayerId() - 1) %4);
+    this->decrementActivePlayerId();
     this->nextPlayer();
   }
-
 
 }
 
@@ -257,7 +241,7 @@ void Model::dealCardsToPlayers() {
 */
 
 void Model::nextPlayer() {
-  this->activePlayerId((this->activePlayerId() + 1)% 4);
+  this->incrementActivePlayerId();
   Player* player = this->activePlayer();
 
   // check if this player has any cards to play
@@ -329,6 +313,18 @@ int Model::activePlayerId() const {
 
 Player* Model::activePlayer() const {
   return this->players_.at(this->activePlayerId());
+}
+
+void Model::decrementActivePlayerId() {
+  assert(this->players_.size() == 4);
+  int id = this->activePlayerId() - 1;
+  this->activePlayerId((id % 4 + 4) % 4);
+}
+
+void Model::incrementActivePlayerId() {
+  assert(this->players_.size() == 4);
+  int id = this->activePlayerId() + 1;
+  this->activePlayerId((id % 4 + 4) % 4);
 }
 
 int Model::seed() const {
