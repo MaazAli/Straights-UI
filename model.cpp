@@ -33,17 +33,27 @@ std::vector<std::vector<Card*> > Model::cardsOnTable() {
 
 std::vector<int> Model::points() {
   std::vector<int> points;
-  for (int i = 0; i < 4; i++) {
-    points.push_back(this->players_.at(i)->points());
+  std::vector<Player*>& players = this->players_;
+
+  assert(players.size() == 4);
+  
+  for (auto it = players.begin(); it != players.end(); it++) {
+    points.push_back((*it)->points());
   }
+  
   return points;
 }
 
 std::vector<std::vector<Card*> > Model::discards() {
   std::vector<std::vector<Card*> > discards;
-  for (int i = 0; i < 4; i++) {
-    discards.push_back(this->players_.at(i)->discards());
+  std::vector<Player*>& players = this->players_;
+
+  assert(players.size() == 4);
+  
+  for (auto it = players.begin(); it != players.end(); it++) {
+    discards.push_back((*it)->discards());
   }
+  
   return discards;
 }
 
