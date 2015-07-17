@@ -245,48 +245,48 @@ void View::player4ButtonClicked() {
 
 void View::update() {
 
-  // If game has ended, we want to clean up the view to it's default state
-  if (this->model_->gameEnded() == true) {
-    this->player1Button.set_label("Human");
-    this->player2Button.set_label("Human");
-    this->player3Button.set_label("Human");
-    this->player4Button.set_label("Human");
+  // // If game has ended, we want to clean up the view to it's default state
+  // if (this->model_->gameEnded() == true) {
+  //   this->player1Button.set_label("Human");
+  //   this->player2Button.set_label("Human");
+  //   this->player3Button.set_label("Human");
+  //   this->player4Button.set_label("Human");
 
-    this->player1Button.set_sensitive(true);
-    this->player2Button.set_sensitive(true);
-    this->player3Button.set_sensitive(true);
-    this->player4Button.set_sensitive(true);
+  //   this->player1Button.set_sensitive(true);
+  //   this->player2Button.set_sensitive(true);
+  //   this->player3Button.set_sensitive(true);
+  //   this->player4Button.set_sensitive(true);
 
-    for (int i = 0; i < 13; i++) {
-      this->handCards[i]->set(deck.getNullCardImage());
-    }
-  } else {
-    std::vector<Card*> cardsInHand = this->model_->cardsInHand();
+  //   for (int i = 0; i < 13; i++) {
+  //     this->handCards[i]->set(deck.getNullCardImage());
+  //   }
+  // } else {
+  //   std::vector<Card*> cardsInHand = this->model_->cardsInHand();
 
-    // Update the cards in hand
-    for (int i = 0; i < 13; i++) {
-      auto cardImage = deck.getNullCardImage();
-      if (i <= cardsInHand.size()) {
-        cardImage = deck.getCardImage(cardsInHand[i]->getRank(), cardsInHand[i]->getSuit());
-      }
-      this->handCards[i]->set(cardImage);
-    }
+  //   // Update the cards in hand
+  //   for (int i = 0; i < 13; i++) {
+  //     auto cardImage = deck.getNullCardImage();
+  //     if (i <= cardsInHand.size()) {
+  //       cardImage = deck.getCardImage(cardsInHand[i]->getRank(), cardsInHand[i]->getSuit());
+  //     }
+  //     this->handCards[i]->set(cardImage);
+  //   }
 
-    this->player1Button.set_sensitive(false);
-    this->player2Button.set_sensitive(false);
-    this->player3Button.set_sensitive(false);
-    this->player4Button.set_sensitive(false);
+  //   this->player1Button.set_sensitive(false);
+  //   this->player2Button.set_sensitive(false);
+  //   this->player3Button.set_sensitive(false);
+  //   this->player4Button.set_sensitive(false);
 
-    // Refactor: Do this in a better way
-    if (this->model_->activePlayerId() == 0) {
-      this->player1Button.set_sensitive(true);
-    } else if (this->model_->activePlayerId() == 1) {
-      this->player2Button.set_sensitive(true);
-    } else if (this->model_->activePlayerId() == 2) {
-      this->player3Button.set_sensitive(true);
-    } else {
-      this->player4Button.set_sensitive(true);
-    }
-  }
-  std::cout << "stuff was updated?" << std::endl;
+  //   // Refactor: Do this in a better way
+  //   if (this->model_->activePlayerId() == 0) {
+  //     this->player1Button.set_sensitive(true);
+  //   } else if (this->model_->activePlayerId() == 1) {
+  //     this->player2Button.set_sensitive(true);
+  //   } else if (this->model_->activePlayerId() == 2) {
+  //     this->player3Button.set_sensitive(true);
+  //   } else {
+  //     this->player4Button.set_sensitive(true);
+  //   }
+  // }
+  // std::cout << "stuff was updated?" << std::endl;
 }
