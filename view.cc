@@ -171,6 +171,7 @@ View::~View() {}
 /////////////////////////////////////////////////////////
 
 void View::startGameButtonClicked() {
+  std::stringstream dialogMsg;
   int seed = (int)std::strtol(this->seedInput.get_text().c_str(), NULL, 10);
   std::string type1 = this->player1Button.get_label();
   std::string type2 = this->player2Button.get_label();
@@ -186,6 +187,12 @@ void View::startGameButtonClicked() {
 
   // Tell the controller to initialize the game
   this->controller_->initGame(seed, playerTypes);
+
+  dialogMsg << "It is player " << (this->model_->activePlayerId() + 1) << "'s turn";
+
+  Gtk::MessageDialog dialog(*this, "Game has started!");
+  dialog.set_secondary_text(dialogMsg.str());
+  dialog.run();
 
   // Update the player specific buttons to rage
   this->player1Button.set_label("RAGE!!!");
@@ -260,10 +267,7 @@ void View::update() {
   // Round ended, display dialog box with some statistics and prompt
   // user to start a new round
   if (roundEnded) {
-    Gtk::MessageDialog dialog(*this, "This is an INFO MessageDialog");
-    dialog.set_secondary_text(
-            "And this is the secondary text that explains things.");
-    dialog.run();
+
     this->controller_->startRound();
   }
 
