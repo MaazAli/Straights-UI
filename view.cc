@@ -151,7 +151,11 @@ View::View(Controller *c, Model *m) :
   player4Button.signal_clicked().connect( sigc::mem_fun( *this, &View::player4ButtonClicked ) );
 
   // Associate button clicked
+  // for (int i = 0; i < 13; i++) {
+  //   cardButtons[i].signal_clicked().connect(sigc::mem_fun(*this, &View::myFunction_i))
+  // }
 
+  // cardButton[0].signal_clicked().connect(sigc::mem_fun(*this, &View::handCard1Clicked));
 
 
 	// The final step is to display the buttons (they display themselves)
@@ -248,13 +252,18 @@ void View::update() {
     this->player3Button.set_label("Human");
     this->player4Button.set_label("Human");
 
+    this->player1Button.set_sensitive(true);
+    this->player2Button.set_sensitive(true);
+    this->player3Button.set_sensitive(true);
+    this->player4Button.set_sensitive(true);
+
     for (int i = 0; i < 13; i++) {
       this->handCards[i]->set(deck.getNullCardImage());
     }
   } else {
     std::vector<Card*> cardsInHand = this->model_->cardsInHand();
 
-    // Update the cards in hand, it will change as we move through users
+    // Update the cards in hand
     for (int i = 0; i < 13; i++) {
       auto cardImage = deck.getNullCardImage();
       if (i <= cardsInHand.size()) {
@@ -263,10 +272,21 @@ void View::update() {
       this->handCards[i]->set(cardImage);
     }
 
+    this->player1Button.set_sensitive(false);
+    this->player2Button.set_sensitive(false);
+    this->player3Button.set_sensitive(false);
+    this->player4Button.set_sensitive(false);
 
+    // Refactor: Do this in a better way
+    if (this->model_->activePlayerId() == 0) {
+      this->player1Button.set_sensitive(true);
+    } else if (this->model_->activePlayerId() == 1) {
+      this->player2Button.set_sensitive(true);
+    } else if (this->model_->activePlayerId() == 2) {
+      this->player3Button.set_sensitive(true);
+    } else {
+      this->player4Button.set_sensitive(true);
+    }
   }
-
-
-
   std::cout << "stuff was updated?" << std::endl;
 }
