@@ -197,7 +197,7 @@ void View::startGameButtonClicked() {
 
 void View::endCurrentGameButtonClicked() {
   // Quit the game, that should reset state.
-  controller_->quit();
+  this->controller_->quit();
 } // View::resetButtonClicked
 
 void View::player1ButtonClicked() {
@@ -259,13 +259,10 @@ void View::update() {
 
   // Round ended, display dialog box with some statistics and prompt
   // user to start a new round
-  if (roundEnded) {
-    // std::cerr << "Round ended" << std::endl;
-    // std::cerr << "Ran this again" << std::endl;
-    Gtk::MessageDialog dialog(*this, "This is an INFO MessageDialog");
-    dialog.set_secondary_text(
-            "And this is the secondary text that explains things.");
-    dialog.run();
+  if (gameEnded) {
+    this->gameEndedDialog();
+  } else if (roundEnded) {
+    this->roundEndedDialog();
   }
 
 
@@ -350,4 +347,31 @@ std::string View::intWithString(std::string type, int val) {
   std::stringstream ss;
   ss << type << val;
   return ss.str();
+}
+
+void View::roundEndedDialog() {
+  std::vector<std::vector<Card*> > discards = this->model_->discards();
+  std::vector<int> points = this->model_->points();
+  std::stringstream dialogMsg;
+  Gtk::MessageDialog dialog(*this, "Round has ended");
+
+  for (int i = 0; i < discards.size(); i++) {
+    dialogMsg << "Player " << (i+1) << ": \n"
+              << "\tDiscards: ";
+    for (int j = 0; j < discards[i].size(); j++) {
+      dialogMsg << *(discards[i][j]) << " ";
+    }
+
+    dialogMsg << "\n\tPoints: " << points[i] << "\n\n";
+
+  }
+
+  dialog.set_secondary_text(dialogMsg.str());
+  dialog.run();
+}
+
+void View::gameEndedDialog() {
+  Gtk::MessageDialog dialog(*this, "Game has ended");
+  dialog.set_secondary_text("Someone was the winner ;)");
+  dialog.run();
 }
