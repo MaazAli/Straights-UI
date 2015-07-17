@@ -248,12 +248,25 @@ void View::cardButtonClicked(int index) {
 
 void View::update() {
 
+  // Grab state from the model
   std::vector<Card*> cardsInHand = this->model_->cardsInHand();
   std::vector< std::vector< Card* > > cardsOnTable = this->model_->cardsOnTable();
   std::vector<int> points;
   std::vector<std::vector<Card*> > discards;
   std::vector<Card*> legalPlays;
   bool gameEnded = this->model_->gameEnded();
+  bool roundEnded = this->model_->roundEnded();
+
+  // Round ended, display dialog box with some statistics and prompt
+  // user to start a new round
+  if (roundEnded) {
+    Gtk::MessageDialog dialog(*this, "This is an INFO MessageDialog");
+    dialog.set_secondary_text(
+            "And this is the secondary text that explains things.");
+    dialog.run();
+    this->controller_->startRound();
+  }
+
 
   if (!gameEnded) {
      points = this->model_->points();
