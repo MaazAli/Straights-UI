@@ -13,10 +13,12 @@ public:
   ~Model();
 
   // View getters
-  std::vector<Card*> cardsInHand();
-  std::vector<std::vector<Card*> > cardsOnTable();
-  std::vector<int> points();
-  std::vector<std::vector<Card*> > discards();
+  std::vector<Card*> cardsInHand() const;
+  std::vector<std::vector<Card*> > cardsOnTable() const;
+  std::vector<int> points() const;
+  std::vector<std::vector<Card*> > discards() const;
+  std::vector<Card*> legalPlays() const;
+  
   bool gameEnded() const;
   bool roundEnded() const;
 
@@ -53,13 +55,13 @@ public:
   //   - notify user
   void endGame();
 
-  
+
   void addPlayer(std::string type);
   void activePlayerId(int id);
   void selectCard(Card* card);
 
   // temporary public method
-  std::vector<Card*> legalPlaysInHand(std::vector<Card*> hand) const;
+  // std::vector<Card*> legalPlaysInHand(std::vector<Card*> hand) const;
 
   // public accessors
   int activePlayerId() const;
@@ -84,7 +86,7 @@ private:
 
   // given the hand, what are the legal plays?
   // ehhh, introduces coupling between computer player and model class
-  // std::vector<Card*> legalPlaysInHand(std::vector<Card*> hand);
+  std::vector<Card*> legalPlaysInHand(std::vector<Card*> hand) const;
 
   // helper accessors
   Player* activePlayer() const;

@@ -19,7 +19,7 @@ Model::~Model() {
 
 // View Getters:
 //   - these return copies of internal data structures!
-std::vector<Card*> Model::cardsInHand(){
+std::vector<Card*> Model::cardsInHand() const {
   if (this->players_.size() == 0) {
     return std::vector<Card*>();
   }
@@ -27,34 +27,38 @@ std::vector<Card*> Model::cardsInHand(){
   return this->activePlayer()->hand();
 }
 
-std::vector<std::vector<Card*> > Model::cardsOnTable() {
+std::vector<std::vector<Card*> > Model::cardsOnTable() const {
   return this->cardsOnTable_;
 }
 
-std::vector<int> Model::points() {
+std::vector<int> Model::points() const {
   std::vector<int> points;
-  std::vector<Player*>& players = this->players_;
+  const std::vector<Player*>& players = this->players_;
 
   assert(players.size() == 4);
-  
+
   for (auto it = players.begin(); it != players.end(); it++) {
     points.push_back((*it)->points());
   }
-  
+
   return points;
 }
 
-std::vector<std::vector<Card*> > Model::discards() {
+std::vector<std::vector<Card*> > Model::discards() const {
   std::vector<std::vector<Card*> > discards;
-  std::vector<Player*>& players = this->players_;
+  const std::vector<Player*>& players = this->players_;
 
   assert(players.size() == 4);
-  
+
   for (auto it = players.begin(); it != players.end(); it++) {
     discards.push_back((*it)->discards());
   }
-  
+
   return discards;
+}
+
+std::vector<Card*> Model::legalPlays() const {
+  return this->legalPlaysInHand(this->cardsInHand());
 }
 
 bool Model::gameEnded() const {
@@ -69,7 +73,7 @@ bool Model::roundEnded() const {
 void Model::rageQuit() {
   assert(this->players_.size() != 0);
   assert(this->activePlayer()->type() == "Human");
-  
+
   Human* human = (Human*)this->activePlayer();
   Computer* computer = new Computer();
 

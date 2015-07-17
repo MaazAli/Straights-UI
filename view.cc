@@ -15,6 +15,7 @@
 #include <vector>
 #include "card.h"
 #include "observer.h"
+#include <algorithm>
 
 // Creates buttons with labels. Sets butBox elements to have the same size,
 // with 10 pixels between widgets
@@ -249,9 +250,16 @@ void View::update() {
 
   std::vector<Card*> cardsInHand = this->model_->cardsInHand();
   std::vector< std::vector< Card* > > cardsOnTable = this->model_->cardsOnTable();
-  std::vector<int> points = this->model_->points();
-  std::vector<std::vector<Card*> > discards = this->model_->discards();
+  std::vector<int> points;
+  std::vector<std::vector<Card*> > discards;
+  std::vector<Card*> legalPlays;
+  bool gameEnded = this->model_->gameEnded();
 
+  if (!gameEnded) {
+     points = this->model_->points();
+     discards = this->model_->discards();
+     legalPlays = this->model_->legalPlays();
+  }
 
 
   // Update the cards in hand
@@ -260,7 +268,9 @@ void View::update() {
     cardButtons[i]->set_sensitive(false);
     if (i < cardsInHand.size()) {
       cardImage = deck.getCardImage(cardsInHand[i]->getRank(), cardsInHand[i]->getSuit());
-      cardButtons[i]->set_sensitive(true);
+      if (legalPlays.size() == 0 || std::find(legalPlays.begin(), legalPlays.end(), cardsInHand[i]) != legalPlays.end()) {
+        cardButtons[i]->set_sensitive(true);
+      }
     }
     this->handCards[i]->set(cardImage);
   }
@@ -277,15 +287,19 @@ void View::update() {
   }
 
   // Update player points, in real time.. kinda.
-  this->points1.set_label(View::intWithString("Points: ", points[0]));
-  this->points2.set_label(View::intWithString("Points: ", points[1]));
-  this->points3.set_label(View::intWithString("Points: ", points[2]));
-  this->points4.set_label(View::intWithString("Points: ", points[3]));
+  this->points1.set_label(View::intWithString("Points: ", (gameEnded) ? 0 : points[0]));
+  this->points2.set_label(View::intWithString("Points: ", (gameEnded) ? 0 : points[1]));
+  this->points3.set_label(View::intWithString("Points: ", (gameEnded) ? 0 : points[2]));
+  this->points4.set_label(View::intWithString("Points: ", (gameEnded) ? 0 : points[3]));
 
   // Update player discard count, in real time... kinda
+  this->discards1.set_label(View::intWithString("Discards: ", (gameEnded) ? 0 : discards[0].size()));
+  this->discards2.set_label(View::intWithString("Discards: ", (gameEnded) ? 0 : discards[1].size()));
+  this->discards3.set_label(View::intWithString("Discards: ", (gameEnded) ? 0 : discards[2].size()));
+  this->discards4.set_label(View::intWithString("Discards: ", (gameEnded) ? 0 : discards[3].size()));
 
   // If game has ended, we want to bring in some buttons to their default state
-  if (this->model_->gameEnded() == true) {
+  if (gameEnded) {
     this->player1Button.set_label("Human");
     this->player2Button.set_label("Human");
     this->player3Button.set_label("Human");
