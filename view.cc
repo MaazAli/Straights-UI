@@ -359,7 +359,28 @@ std::string View::intWithString(std::string type, int val) {
 }
 
 void View::roundEndedDialog() {
+  std::vector<std::vector<Card*> > discards = this->model_->discards();
+  std::vector<int> points = this->model_->points();
+  std::stringstream dialogMsg;
   Gtk::MessageDialog dialog(*this, "Round has ended");
-  dialog.set_secondary_text("New round has begun");
+
+  for (int i = 0; i < discards.size(); i++) {
+    dialogMsg << "Player " << (i+1) << ": \n"
+              << "\tDiscards: ";
+    for (int j = 0; j < discards[i].size(); j++) {
+      dialogMsg << *(discards[i][j]) << " ";
+    }
+
+    dialogMsg << "\n\tPoints: " << points[i] << "\n\n";
+
+  }
+
+  dialog.set_secondary_text(dialogMsg.str());
+  dialog.run();
+}
+
+void View::gameEndedDialog() {
+  Gtk::MessageDialog dialog(*this, "Game has ended");
+  dialog.set_secondary_text("Someone was the winner ;)");
   dialog.run();
 }
