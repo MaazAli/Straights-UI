@@ -95,6 +95,7 @@ private:
   void cardButtonClicked(int index);
 
   static std::string intWithString(std::string, int);
+  void roundEndedDialog();
 
 }; // View
 

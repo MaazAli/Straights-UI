@@ -267,7 +267,7 @@ void View::update() {
   // Round ended, display dialog box with some statistics and prompt
   // user to start a new round
   if (roundEnded) {
-
+    this->roundEndedDialog();
     this->controller_->startRound();
   }
 
@@ -353,4 +353,10 @@ std::string View::intWithString(std::string type, int val) {
   std::stringstream ss;
   ss << type << val;
   return ss.str();
+}
+
+void View::roundEndedDialog() {
+  Gtk::MessageDialog dialog(*this, "Round has ended");
+  dialog.set_secondary_text("New round has begun");
+  dialog.run();
 }
