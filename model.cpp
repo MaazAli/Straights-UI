@@ -263,6 +263,14 @@ void Model::nextPlayer() {
   // if not, end the turn and notify
   if (player->hand().size() == 0) {
     this->roundEnded_ = true;
+    this->gameEnded_ = false;
+
+    for (auto it = this->players_.begin(); it != this->players_.end(); it++) {
+      if ((*it)->points() > 80) {
+        this->gameEnded_ = true;
+      }
+    }
+
     this->notify();
     return;
   }

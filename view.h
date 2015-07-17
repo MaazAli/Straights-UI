@@ -96,6 +96,7 @@ private:
 
   static std::string intWithString(std::string, int);
   void roundEndedDialog();
+  void gameEndedDialog();
 
 }; // View
 

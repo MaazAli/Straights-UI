@@ -266,7 +266,10 @@ void View::update() {
 
   // Round ended, display dialog box with some statistics and prompt
   // user to start a new round
-  if (roundEnded) {
+  if (gameEnded) {
+    this->gameEndedDialog();
+    this->endCurrentGameButtonClicked();
+  } else if (roundEnded) {
     this->roundEndedDialog();
     this->controller_->startRound();
   }
