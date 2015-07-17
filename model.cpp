@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <cassert>
+#include <iostream>
 
 Model::Model() : deck_(new Deck{}), seed_(0) {
     for (int i = 0; i < 4; i++) {
@@ -50,6 +51,10 @@ bool Model::gameEnded() const {
   return this->gameEnded_;
 }
 
+bool Model::roundEnded() const {
+  return this->roundEnded_;
+}
+
 // manipulate model
 void Model::rageQuit() {
   assert(this->players_.size() != 0);
@@ -73,7 +78,7 @@ void Model::rageQuit() {
 }
 
 void Model::startRound() {
-
+  this->roundEnded_ = false;
   this->resetPlayers(false);
   this->clearCardsOnTable();
   this->shuffleDeck();
@@ -243,7 +248,7 @@ void Model::nextPlayer() {
   // check if this player has any cards to play
   // if not, end the turn and notify
   if (player->hand().size() == 0) {
-
+    this->roundEnded_ = true;
     this->notify();
     return;
   }
