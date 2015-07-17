@@ -22,6 +22,9 @@ public:
   bool gameEnded() const;
   bool roundEnded() const;
 
+  // get the id of player with 80+ points; -1 if no winner
+  int winner() const;
+
   // manipulate model
   void rageQuit();
 
@@ -66,8 +69,18 @@ public:
   // public accessors
   int activePlayerId() const;
 private:
-  // helper methods
-
+  
+  // class that helps record previous games
+  // class Game {
+  // public:
+  //   Game(std::vector<int> points, std::vector<std::vector<Card*> > discards);
+  //   std::vector<int> points() const;
+  //   std::vector<std::vector<Card*> > discards() const;
+  // private:
+  //   std::vector<int> points_;
+  //   std::vector<std::vector<Card*> > discards_;
+  // };
+  
   // Tasks:
   //   - clear the discards and hands of all players
   //   - if hardReset is true, the players' points are reset too
@@ -79,6 +92,7 @@ private:
   //   - using the sorted deck copy, we'll sort the current deck
   void unshuffleDeck();
   void dealCardsToPlayers();
+  bool hasWinner() const;
 
   // increments activePlayerId_
   // if the next player is computer, we make him play his turn and go to the next player
@@ -110,6 +124,7 @@ private:
   // state members
   bool gameEnded_;
   bool roundEnded_;
+  // std::vector<Game> gameHistory_;
 };
 
 #endif

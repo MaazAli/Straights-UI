@@ -69,6 +69,16 @@ bool Model::roundEnded() const {
   return this->roundEnded_;
 }
 
+int Model::winner() const {
+  const std::vector<Player*>& players = this->players_;
+  for (int i = 0; i < players.size(); i++) {
+    if (players.at(i)->points() >= 80) {
+      return i+1;
+    }
+  }
+  return -1;
+}
+
 // manipulate model
 void Model::rageQuit() {
   assert(this->players_.size() != 0);
@@ -251,6 +261,10 @@ void Model::dealCardsToPlayers() {
   }
 }
 
+bool Model::hasWinner() const{
+  return this->winner() != -1;
+}
+
 /*
 * TODO Figure out what happens when the player's hand is empty. Do we toggle something in the model (roundOver)? how does the view know?
 */
@@ -258,20 +272,23 @@ void Model::dealCardsToPlayers() {
 void Model::nextPlayer() {
   this->incrementActivePlayerId();
   Player* player = this->activePlayer();
+  this->notify();
 
   // check if this player has any cards to play
   // if not, end the turn and notify
   if (player->hand().size() == 0) {
+    std::cerr << "Setting round to ended" << std::endl;
     this->roundEnded_ = true;
-    this->gameEnded_ = false;
-
-    for (auto it = this->players_.begin(); it != this->players_.end(); it++) {
-      if ((*it)->points() > 80) {
-        this->gameEnded_ = true;
-      }
-    }
-
+    std::cerr << "Notifying user" << std::endl;
     this->notify();
+    if (!this->hasWinner()) {
+      std::cerr << "Game didn't have a winner, so we start another round" << std::endl;
+      this->startRound();
+    } else {
+      std::cerr << "Game had a winner" << std::endl;
+      this->endGame();
+    }
+    std::cerr << "Updating the view after either starting another round or ending the game" << std::endl;
     return;
   }
 
@@ -285,7 +302,6 @@ void Model::nextPlayer() {
     this->nextPlayer();
   }
 
-  this->notify();
 }
 
 // determine the legal plays in hand
