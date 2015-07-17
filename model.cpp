@@ -94,14 +94,14 @@ void Model::startGame(int seed) {
     std::cout << this->deck_->cardAt(i) << " ";
   }
   std::cout << std::endl;
-  
+
   this->unshuffleDeck();
 
   for (int i = 0; i < 52; i++) {
     std::cout << this->deck_->cardAt(i) << " ";
   }
   std::cout << std::endl;
-  
+
   this->seed(seed);
   this->shuffleDeck();
 
@@ -109,7 +109,7 @@ void Model::startGame(int seed) {
     std::cout << this->deck_->cardAt(i) << " ";
   }
   std::cout << std::endl;
-  
+
   // sets active player too
   this->dealCardsToPlayers();
 
@@ -137,6 +137,7 @@ void Model::endGame() {
   this->unshuffleDeck();
   this->activePlayerId(0);
   this->seed(0);
+  this->clearCardsOnTable();
   this->gameEnded_ = true;
   this->notify();
 }
@@ -171,17 +172,15 @@ void Model::selectCard(Card* card) {
     bool found = false;
     for (int i = 0; i < legalPlays.size(); i++) {
       if (*card == *legalPlays.at(i)) {
-	found = true;
-	break;
+      	found = true;
+      	break;
       }
     }
 
     if (found) {
       activePlayer->playCard(card);
-
       // card's been played, so we update table
       this->cardsOnTable_[card->getSuit()][card->getRank()] = card;
-
     } else {
       // throw exception because there were legal cards we
       // could play but we chose to play something illegal
@@ -239,14 +238,11 @@ void Model::dealCardsToPlayers() {
 
   for (int i = 0; i < 4; i++) {
     for (int j = 13 * i; j < 13 * (i + 1); j++) {
-
       Card& card = deck->cardAt(j);
-
       // we're figuring out which person should go first
       if (card == startingCard) {
-	this->activePlayerId(i);
+	      this->activePlayerId(i);
       }
-
       this->players_.at(i)->takeCard(&card);
     }
   }
@@ -270,8 +266,14 @@ void Model::nextPlayer() {
 
   if (player->type() == "Computer") {
     Computer* computer = (Computer*)player;
-    computer->play(this->legalPlaysInHand(computer->hand()));
+    Card* card = computer->play(this->legalPlaysInHand(computer->hand()));
+    if (card != NULL) {
+      std::cout << *(card) << std::endl;
+      this->cardsOnTable_[card->getSuit()][card->getRank()] = card;
+    }
+    std::cout << "SUP " << std::endl;
     this->notify();
+    std::cout << "SUP" << std::endl;
     this->nextPlayer();
   }
 

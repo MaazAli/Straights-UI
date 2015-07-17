@@ -14,12 +14,14 @@ void Computer::takeOver(Human* player) {
 // precondition:
 //   - legalPlays is a subset of the computer's hand
 //   - hand isn't empty
-void Computer::play(std::vector<Card*> legalPlays) {
+Card* Computer::play(std::vector<Card*> legalPlays) {
   std::vector<Card*> hand = this->hand();
   if (legalPlays.size() == 0) {
     this->discardCard(hand.at(0));
+    return NULL;
   } else {
     this->playCard(legalPlays.at(0));
+    return legalPlays.at(0);
   }
 }
 

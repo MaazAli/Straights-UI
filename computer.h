@@ -6,7 +6,7 @@
 class Computer : public Player {
 public:
   void takeOver(Human* player);
-  void play(std::vector<Card*> legalPlays);
+  Card* play(std::vector<Card*> legalPlays);
   virtual std::string type() const;
 private:
 };

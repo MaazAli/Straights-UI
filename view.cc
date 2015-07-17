@@ -109,6 +109,7 @@ View::View(Controller *c, Model *m) :
         cardButtons[i] = new Gtk::Button();
         handCards[i] = new Gtk::Image(deck.getNullCardImage());
         cardButtons[i]->set_image(*handCards[i]);
+        cardButtons[i]->set_sensitive(false);
         yourHandGrid.add( *cardButtons[i] );
       }
 
@@ -150,13 +151,9 @@ View::View(Controller *c, Model *m) :
   player3Button.signal_clicked().connect( sigc::mem_fun( *this, &View::player3ButtonClicked ) );
   player4Button.signal_clicked().connect( sigc::mem_fun( *this, &View::player4ButtonClicked ) );
 
-  // Associate button clicked
-  // for (int i = 0; i < 13; i++) {
-  //   cardButtons[i].signal_clicked().connect(sigc::mem_fun(*this, &View::myFunction_i))
-  // }
-
-  // cardButton[0].signal_clicked().connect(sigc::mem_fun(*this, &View::handCard1Clicked));
-
+  for(int i = 0; i < 13; ++i) {
+    cardButtons[i]->signal_clicked().connect(sigc::bind<int>(sigc::mem_fun(*this, &View::cardButtonClicked), i));
+  }
 
 	// The final step is to display the buttons (they display themselves)
 	show_all();
@@ -243,9 +240,51 @@ void View::player4ButtonClicked() {
   }
 }
 
+void View::cardButtonClicked(int index) {
+  std::vector<Card*> cardsInHand = this->model_->cardsInHand();
+  this->controller_->selectCard(cardsInHand[index]);
+}
+
 void View::update() {
 
-  // If game has ended, we want to clean up the view to it's default state
+  std::vector<Card*> cardsInHand = this->model_->cardsInHand();
+  std::vector< std::vector< Card* > > cardsOnTable = this->model_->cardsOnTable();
+  std::vector<int> points = this->model_->points();
+  std::vector<std::vector<Card*> > discards = this->model_->discards();
+
+
+
+  // Update the cards in hand
+  for (int i = 0; i < 13; i++) {
+    auto cardImage = deck.getNullCardImage();
+    cardButtons[i]->set_sensitive(false);
+    if (i < cardsInHand.size()) {
+      cardImage = deck.getCardImage(cardsInHand[i]->getRank(), cardsInHand[i]->getSuit());
+      cardButtons[i]->set_sensitive(true);
+    }
+    this->handCards[i]->set(cardImage);
+  }
+
+  // Update the cards on table
+  for (int i = 0; i < 4; i++) {
+    for (int j = 0; j < 13; j++) {
+      if (cardsOnTable[i][j] == NULL) {
+        this->card[i*13 + j]->set(this->deck.getNullCardImage());
+      } else {
+        this->card[i*13 + j]->set(this->deck.getCardImage(j, i));
+      }
+    }
+  }
+
+  // Update player points, in real time.. kinda.
+  this->points1.set_label(View::intWithString("Points: ", points[0]));
+  this->points2.set_label(View::intWithString("Points: ", points[1]));
+  this->points3.set_label(View::intWithString("Points: ", points[2]));
+  this->points4.set_label(View::intWithString("Points: ", points[3]));
+
+  // Update player discard count, in real time... kinda
+
+  // If game has ended, we want to bring in some buttons to their default state
   if (this->model_->gameEnded() == true) {
     this->player1Button.set_label("Human");
     this->player2Button.set_label("Human");
@@ -257,20 +296,7 @@ void View::update() {
     this->player3Button.set_sensitive(true);
     this->player4Button.set_sensitive(true);
 
-    for (int i = 0; i < 13; i++) {
-      this->handCards[i]->set(deck.getNullCardImage());
-    }
   } else {
-    std::vector<Card*> cardsInHand = this->model_->cardsInHand();
-
-    // Update the cards in hand
-    for (int i = 0; i < 13; i++) {
-      auto cardImage = deck.getNullCardImage();
-      if (i <= cardsInHand.size()) {
-        cardImage = deck.getCardImage(cardsInHand[i]->getRank(), cardsInHand[i]->getSuit());
-      }
-      this->handCards[i]->set(cardImage);
-    }
 
     this->player1Button.set_sensitive(false);
     this->player2Button.set_sensitive(false);
@@ -289,4 +315,11 @@ void View::update() {
     }
   }
   std::cout << "stuff was updated?" << std::endl;
+}
+
+// HELPER FUNCTION
+std::string View::intWithString(std::string type, int val) {
+  std::stringstream ss;
+  ss << type << val;
+  return ss.str();
 }

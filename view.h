@@ -91,6 +91,11 @@ private:
   void player3ButtonClicked();
   void player4ButtonClicked();
 
+
+  void cardButtonClicked(int index);
+
+  static std::string intWithString(std::string, int);
+
 }; // View
 
 #endif
