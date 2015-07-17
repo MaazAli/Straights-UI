@@ -18,6 +18,7 @@ public:
   std::vector<int> points();
   std::vector<std::vector<Card*> > discards();
   bool gameEnded() const;
+  bool roundEnded() const;
 
   // manipulate model
   void rageQuit();
@@ -93,8 +94,9 @@ private:
   // helper mutators
   //   replaces the active player with p
   void activePlayer(Player* p);
+  void decrementActivePlayerId();
+  void incrementActivePlayerId();
   void seed(int seed);
-
 
   // private members
   std::vector<Player*> players_;
@@ -105,6 +107,7 @@ private:
 
   // state members
   bool gameEnded_;
+  bool roundEnded_;
 };
 
 #endif
