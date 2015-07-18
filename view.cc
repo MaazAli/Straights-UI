@@ -166,7 +166,26 @@ View::View(Controller *c, Model *m) :
 
 } // View::View
 
-View::~View() {}
+View::~View() {
+  // Delete Gtk::Image objects on the heap
+  // that hold the card images
+  for (int i = 0; i < 52; i++) {
+    delete this->card[i];
+  }
+
+  // Delete Gtk::Image objects on the heap
+  // that hold the user's hand
+  for (int i = 0; i < 13; i++) {
+    delete this->handCards[i];
+  }
+
+  // Delete Gtk::Button objects on the heap
+  // that wrap around the user's hand cards
+  for (int i = 0; i < 13; i++) {
+    delete this->cardButtons[i];
+  }
+
+}
 
 /////////////////////////////////////////////////////////
 //////////////// Signal Handlers ////////////////////////
