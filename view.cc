@@ -16,6 +16,8 @@
 #include "card.h"
 #include "observer.h"
 #include <algorithm>
+#include <tuple>
+#include <cassert>
 
 // Creates buttons with labels. Sets butBox elements to have the same size,
 // with 10 pixels between widgets
@@ -255,22 +257,30 @@ void View::update() {
   std::vector<int> points;
   std::vector<std::vector<Card*> > discards;
   std::vector<Card*> legalPlays;
+  
   bool gameEnded = this->model_->gameEnded();
+  bool gameKilled = this->model_->gameKilled();
+  bool gameOver = gameEnded || gameKilled;
   bool roundEnded = this->model_->roundEnded();
-
-  if (!gameEnded) {
+  
+  if (!gameOver) {
      points = this->model_->points();
      discards = this->model_->discards();
      legalPlays = this->model_->legalPlays();
   }
 
+  std::cerr << "Got passed the points fetching" << std::endl;
+
   // Round ended, display dialog box with some statistics and prompt
   // user to start a new round
-  if (gameEnded) {
-    this->gameEndedDialog();
+  if (gameEnded && ! gameKilled) {
+    std::vector<std::tuple<int,int> > winners = this->model_->winners();
+    this->gameEndedDialog(winners);
   } else if (roundEnded) {
     this->roundEndedDialog();
   }
+
+  std::cerr << "Got past displaying the dialog box" << std::endl;
 
   // Update the cards in hand
   for (int i = 0; i < 13; i++) {
@@ -285,6 +295,8 @@ void View::update() {
     this->handCards[i]->set(cardImage);
   }
 
+  std::cerr << "Got past updating the cards in hand" << std::endl;
+
   // Update the cards on table
   for (int i = 0; i < 4; i++) {
     for (int j = 0; j < 13; j++) {
@@ -296,20 +308,26 @@ void View::update() {
     }
   }
 
+  std::cerr << "Got past updating the cards in the table" << std::endl;
+  
   // Update player points, in real time.. kinda.
-  this->points1.set_label(View::intWithString("Points: ", (gameEnded) ? 0 : points[0]));
-  this->points2.set_label(View::intWithString("Points: ", (gameEnded) ? 0 : points[1]));
-  this->points3.set_label(View::intWithString("Points: ", (gameEnded) ? 0 : points[2]));
-  this->points4.set_label(View::intWithString("Points: ", (gameEnded) ? 0 : points[3]));
+  this->points1.set_label(View::intWithString("Points: ", (gameOver) ? 0 : points[0]));
+  this->points2.set_label(View::intWithString("Points: ", (gameOver) ? 0 : points[1]));
+  this->points3.set_label(View::intWithString("Points: ", (gameOver) ? 0 : points[2]));
+  this->points4.set_label(View::intWithString("Points: ", (gameOver) ? 0 : points[3]));
+
+  std::cerr << "Got past updating player points" << std::endl;
 
   // Update player discard count, in real time... kinda
-  this->discards1.set_label(View::intWithString("Discards: ", (gameEnded) ? 0 : discards[0].size()));
-  this->discards2.set_label(View::intWithString("Discards: ", (gameEnded) ? 0 : discards[1].size()));
-  this->discards3.set_label(View::intWithString("Discards: ", (gameEnded) ? 0 : discards[2].size()));
-  this->discards4.set_label(View::intWithString("Discards: ", (gameEnded) ? 0 : discards[3].size()));
+  this->discards1.set_label(View::intWithString("Discards: ", (gameOver) ? 0 : discards[0].size()));
+  this->discards2.set_label(View::intWithString("Discards: ", (gameOver) ? 0 : discards[1].size()));
+  this->discards3.set_label(View::intWithString("Discards: ", (gameOver) ? 0 : discards[2].size()));
+  this->discards4.set_label(View::intWithString("Discards: ", (gameOver) ? 0 : discards[3].size()));
+
+  std::cerr << "Got past updating player discards" << std::endl;
 
   // If game has ended, we want to bring in some buttons to their default state
-  if (gameEnded) {
+  if (gameOver) {
     std::cout << "Did we get here at the end" << std::endl;
     this->player1Button.set_label("Human");
     this->player2Button.set_label("Human");
@@ -371,8 +389,20 @@ void View::roundEndedDialog() {
   dialog.run();
 }
 
-void View::gameEndedDialog() {
-  Gtk::MessageDialog dialog(*this, "Game has ended");
-  dialog.set_secondary_text("Someone was the winner ;)");
+void View::gameEndedDialog(std::vector<std::tuple<int,int> > winners) {
+  assert(winners.size() != 0);
+  
+  Gtk::MessageDialog dialog(*this, "Game has ended!");
+  std::stringstream secondaryText;
+  secondaryText << "The Winner"
+  		<< ((winners.size() > 1) ? "s" : "")
+  		<< ":";
+
+  for (auto it = winners.begin() ; it != winners.end(); it++) {
+    secondaryText << " "
+  		  << std::get<0>(*it);
+  }
+  
+  dialog.set_secondary_text(secondaryText.str());
   dialog.run();
 }

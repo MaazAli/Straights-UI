@@ -96,7 +96,7 @@ private:
 
   static std::string intWithString(std::string, int);
   void roundEndedDialog();
-  void gameEndedDialog();
+  void gameEndedDialog(std::vector<std::tuple<int,int> >);
 
 }; // View
 

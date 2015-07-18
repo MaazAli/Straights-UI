@@ -6,6 +6,7 @@
 #include "player.h"
 #include <vector>
 #include <string>
+#include <tuple>
 
 class Model : public Subject {
 public:
@@ -18,12 +19,13 @@ public:
   std::vector<int> points() const;
   std::vector<std::vector<Card*> > discards() const;
   std::vector<Card*> legalPlays() const;
-  
+
+  bool gameKilled() const;
   bool gameEnded() const;
   bool roundEnded() const;
 
-  // get the id of player with 80+ points; -1 if no winner
-  int winner() const;
+  // returns (playerId, points); the playerId is 1 indexed
+  std::vector<std::tuple<int,int> > winners() const;
 
   // manipulate model
   void rageQuit();
@@ -58,28 +60,19 @@ public:
   //   - notify user
   void endGame();
 
+  // Tasks:
+  //   - clear all private state
+  //   - set gameKilled to true
+  //   - notify user
+  void killGame();
 
   void addPlayer(std::string type);
   void activePlayerId(int id);
   void selectCard(Card* card);
 
-  // temporary public method
-  // std::vector<Card*> legalPlaysInHand(std::vector<Card*> hand) const;
-
   // public accessors
   int activePlayerId() const;
 private:
-  
-  // class that helps record previous games
-  // class Game {
-  // public:
-  //   Game(std::vector<int> points, std::vector<std::vector<Card*> > discards);
-  //   std::vector<int> points() const;
-  //   std::vector<std::vector<Card*> > discards() const;
-  // private:
-  //   std::vector<int> points_;
-  //   std::vector<std::vector<Card*> > discards_;
-  // };
   
   // Tasks:
   //   - clear the discards and hands of all players
@@ -94,12 +87,13 @@ private:
   void dealCardsToPlayers();
   bool hasWinner() const;
 
-  // increments activePlayerId_
-  // if the next player is computer, we make him play his turn and go to the next player
+  // Tasks:
+  //   - increments activePlayerId_
+  //   - if the next player is computer, we make him play his turn
+  //     and go to the next player
   void nextPlayer();
 
   // given the hand, what are the legal plays?
-  // ehhh, introduces coupling between computer player and model class
   std::vector<Card*> legalPlaysInHand(std::vector<Card*> hand) const;
 
   // helper accessors
@@ -108,13 +102,14 @@ private:
   Deck* deck() const;
 
   // helper mutators
-  //   replaces the active player with p
   void activePlayer(Player* p);
   void decrementActivePlayerId();
   void incrementActivePlayerId();
   void seed(int seed);
+  void calculateWinners();
+  void resetPrivates();
 
-  // private members
+  // Privates: private members
   std::vector<Player*> players_;
   std::vector<std::vector<Card*> > cardsOnTable_;
   int activePlayerId_;
@@ -123,8 +118,11 @@ private:
 
   // state members
   bool gameEnded_;
+  bool gameKilled_;
   bool roundEnded_;
-  // std::vector<Game> gameHistory_;
+
+  // defaults to an empty vector in the beginning
+  std::vector<std::tuple<int, int> > winners_;
 };
 
 #endif

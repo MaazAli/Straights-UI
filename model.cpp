@@ -6,6 +6,7 @@
 #include <string>
 #include <cassert>
 #include <iostream>
+#include <tuple>
 
 Model::Model() : deck_(new Deck{}), seed_(0) {
     for (int i = 0; i < 4; i++) {
@@ -61,6 +62,10 @@ std::vector<Card*> Model::legalPlays() const {
   return this->legalPlaysInHand(this->cardsInHand());
 }
 
+bool Model::gameKilled() const {
+  return this->gameKilled_;
+}
+
 bool Model::gameEnded() const {
   return this->gameEnded_;
 }
@@ -69,14 +74,8 @@ bool Model::roundEnded() const {
   return this->roundEnded_;
 }
 
-int Model::winner() const {
-  const std::vector<Player*>& players = this->players_;
-  for (int i = 0; i < players.size(); i++) {
-    if (players.at(i)->points() >= 80) {
-      return i+1;
-    }
-  }
-  return -1;
+std::vector<std::tuple<int,int> > Model::winners() const {
+  return this->winners_;
 }
 
 // manipulate model
@@ -103,6 +102,8 @@ void Model::rageQuit() {
 
 void Model::startRound() {
   this->roundEnded_ = false;
+  this->gameKilled_ = false;
+  this->gameEnded_ = false;
   this->resetPlayers(false);
   this->clearCardsOnTable();
   this->shuffleDeck();
@@ -119,6 +120,7 @@ void Model::startRound() {
 
 void Model::startGame(int seed) {
   this->roundEnded_ = false;
+  this->gameKilled_ = false;
   this->gameEnded_ = false;
   this->resetPlayers(true);
   this->clearCardsOnTable();
@@ -134,25 +136,26 @@ void Model::startGame(int seed) {
     this->decrementActivePlayerId();
     this->nextPlayer();
   }
-
 }
 
+// if the game has ended normally,
+// the round has also ended normally
 void Model::endGame() {
-
-  // delete all the players
-  std::vector<Player*>& players = this->players_;
-  for (auto it = players.begin(); it != players.end(); it++) {
-    delete *it;
-  }
-
-  this->players_.clear();
-
-  // everything else
-  this->unshuffleDeck();
-  this->activePlayerId(0);
-  this->seed(0);
-  this->clearCardsOnTable();
+  this->calculateWinners();
+  this->resetPrivates();
+  this->roundEnded_ = true;
   this->gameEnded_ = true;
+  this->gameKilled_ = false;
+  this->notify();
+}
+
+// user just prematurely kills the game
+void Model::killGame() {
+  this->resetPrivates();
+  this->roundEnded_ = false;
+  this->gameEnded_ = false;
+  this->gameKilled_ = true;
+  std::cerr << "Was able to kill the game properly" << std::endl;
   this->notify();
 }
 
@@ -209,10 +212,6 @@ void Model::selectCard(Card* card) {
   this->nextPlayer();
 }
 
-void Model::seed(int seed) {
-  this->seed_ = seed;
-}
-
 // Private Methods
 void Model::resetPlayers(bool hardReset) {
   std::vector<Player*>& players = this->players_;
@@ -262,8 +261,17 @@ void Model::dealCardsToPlayers() {
   }
 }
 
+// Responsibilities:
+//   - Return true if any player has more than 80 points,
+//     false otherwise
 bool Model::hasWinner() const{
-  return this->winner() != -1;
+  const std::vector<Player*>& players = this->players_;
+  for (auto it = players.begin(); it != players.end(); it++) {
+    if ((*it)->points() >= 80) {
+      return true;
+    }
+  }
+  return false;
 }
 
 /*
@@ -358,6 +366,15 @@ Player* Model::activePlayer() const {
   return this->players_.at(this->activePlayerId());
 }
 
+int Model::seed() const {
+  return this->seed_;
+}
+
+// helper mutators
+void Model::activePlayer(Player* player) {
+  this->players_[this->activePlayerId()] = player;
+}
+
 void Model::decrementActivePlayerId() {
   assert(this->players_.size() == 4);
   int id = this->activePlayerId() - 1;
@@ -370,12 +387,51 @@ void Model::incrementActivePlayerId() {
   this->activePlayerId((id % 4 + 4) % 4);
 }
 
-int Model::seed() const {
-  return this->seed_;
+void Model::seed(int seed) {
+  this->seed_ = seed;
 }
 
-// helper mutators
+void Model::calculateWinners() {
+  assert(this->hasWinner());
+  assert(this->players_.size() == 4);
+  
+  const std::vector<Player*>& players = this->players_;
+  std::vector<std::tuple<int,int> > winners;
+  
+  int minPoints = players.at(0)->points();
+  int minPlayerId = 0;
+  winners.push_back(std::tuple<int, int>{minPlayerId + 1, minPoints});
+  
+  for (int i = minPlayerId + 1; i < players.size(); i++) {
+    int points = players.at(i)->points();
 
-void Model::activePlayer(Player* player) {
-  this->players_[this->activePlayerId()] = player;
+    if (points < minPoints) {
+      winners.clear();
+      minPoints = points;
+      minPlayerId = i;
+    }
+
+    if (points <= minPoints) {
+      winners.push_back(std::tuple<int, int>{i + 1, points});
+    }   
+  }
+
+  this->winners_ = winners;
 }
+
+void Model::resetPrivates() {
+  // delete all the players from the heap
+  std::vector<Player*>& players = this->players_;
+  for (auto it = players.begin(); it != players.end(); it++) {
+    delete *it;
+  }
+
+  this->players_.clear();
+
+  // clear everything else
+  this->unshuffleDeck();
+  this->activePlayerId(0);
+  this->seed(0);
+  this->clearCardsOnTable();
+}
+
