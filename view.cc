@@ -257,12 +257,12 @@ void View::update() {
   std::vector<int> points;
   std::vector<std::vector<Card*> > discards;
   std::vector<Card*> legalPlays;
-  
+
   bool gameEnded = this->model_->gameEnded();
   bool gameKilled = this->model_->gameKilled();
   bool gameOver = gameEnded || gameKilled;
   bool roundEnded = this->model_->roundEnded();
-  
+
   if (!gameOver) {
      points = this->model_->points();
      discards = this->model_->discards();
@@ -309,7 +309,7 @@ void View::update() {
   }
 
   std::cerr << "Got past updating the cards in the table" << std::endl;
-  
+
   // Update player points, in real time.. kinda.
   this->points1.set_label(View::intWithString("Points: ", (gameOver) ? 0 : points[0]));
   this->points2.set_label(View::intWithString("Points: ", (gameOver) ? 0 : points[1]));
@@ -391,7 +391,7 @@ void View::roundEndedDialog() {
 
 void View::gameEndedDialog(std::vector<std::tuple<int,int> > winners) {
   assert(winners.size() != 0);
-  
+
   Gtk::MessageDialog dialog(*this, "Game has ended!");
   std::stringstream secondaryText;
   secondaryText << "The Winner"
@@ -399,10 +399,14 @@ void View::gameEndedDialog(std::vector<std::tuple<int,int> > winners) {
   		<< ":";
 
   for (auto it = winners.begin() ; it != winners.end(); it++) {
-    secondaryText << " "
-  		  << std::get<0>(*it);
+    secondaryText << " Player "
+  		  << std::get<0>(*it)
+        << " with "
+        << std::get<1>(*it)
+        << " points"
+        << std::endl;
   }
-  
+
   dialog.set_secondary_text(secondaryText.str());
   dialog.run();
 }
