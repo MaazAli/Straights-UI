@@ -52,15 +52,6 @@ public:
   void startGame(int seed);
 
   // Tasks:
-  //   - clear player vector
-  //   - delete deck and create a new one
-  //   - clear cards on the table
-  //   - reset seed to 0
-  //   - reset activePlayerId to 0
-  //   - notify user
-  void endGame();
-
-  // Tasks:
   //   - clear all private state
   //   - set gameKilled to true
   //   - notify user
@@ -73,6 +64,15 @@ public:
   // public accessors
   int activePlayerId() const;
 private:
+
+  // Tasks:
+  //   - clear player vector
+  //   - delete deck and create a new one
+  //   - clear cards on the table
+  //   - reset seed to 0
+  //   - reset activePlayerId to 0
+  //   - notify user
+  void endGame();
   
   // Tasks:
   //   - clear the discards and hands of all players
