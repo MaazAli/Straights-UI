@@ -118,6 +118,7 @@ void Model::startRound() {
 }
 
 void Model::startGame(int seed) {
+  this->roundEnded_ = false;
   this->gameEnded_ = false;
   this->resetPlayers(true);
   this->clearCardsOnTable();

@@ -184,14 +184,15 @@ void View::startGameButtonClicked() {
   playerTypes.push_back(type3);
   playerTypes.push_back(type4);
 
-  // Tell the controller to initialize the game
-  this->controller_->initGame(seed, playerTypes);
 
   // Update the player specific buttons to rage
   this->player1Button.set_label("RAGE!!!");
   this->player2Button.set_label("RAGE!!!");
   this->player3Button.set_label("RAGE!!!");
   this->player4Button.set_label("RAGE!!!");
+
+  // Tell the controller to initialize the game
+  this->controller_->initGame(seed, playerTypes);
 
 } // View::nextButtonClicked
 
@@ -257,6 +258,12 @@ void View::update() {
   bool gameEnded = this->model_->gameEnded();
   bool roundEnded = this->model_->roundEnded();
 
+  if (!gameEnded) {
+     points = this->model_->points();
+     discards = this->model_->discards();
+     legalPlays = this->model_->legalPlays();
+  }
+
   // Round ended, display dialog box with some statistics and prompt
   // user to start a new round
   if (gameEnded) {
@@ -264,14 +271,6 @@ void View::update() {
   } else if (roundEnded) {
     this->roundEndedDialog();
   }
-
-
-  if (!gameEnded) {
-     points = this->model_->points();
-     discards = this->model_->discards();
-     legalPlays = this->model_->legalPlays();
-  }
-
 
   // Update the cards in hand
   for (int i = 0; i < 13; i++) {
@@ -311,6 +310,7 @@ void View::update() {
 
   // If game has ended, we want to bring in some buttons to their default state
   if (gameEnded) {
+    std::cout << "Did we get here at the end" << std::endl;
     this->player1Button.set_label("Human");
     this->player2Button.set_label("Human");
     this->player3Button.set_label("Human");
@@ -339,7 +339,8 @@ void View::update() {
       this->player4Button.set_sensitive(true);
     }
   }
-  std::cout << "stuff was updated?" << std::endl;
+
+  // std::cout << "stuff was updated?" << std::endl;
 }
 
 // HELPER FUNCTION
