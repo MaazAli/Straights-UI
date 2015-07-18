@@ -22,7 +22,7 @@
 View::View(Controller *c, Model *m) :
   model_(m),
   controller_(c),
-  sections(true, 10),
+  sections(false, 10),
   gameControlSection(false, 10),
   playerSection(true, 10),
   cardsOnTheTableGrid(true, 10),
@@ -57,7 +57,7 @@ View::View(Controller *c, Model *m) :
 
 	// Sets some properties of the window.
   set_title( "Straights UI" );
-  set_size_request(800, 600);
+  set_size_request(800, 700);
   set_border_width( 10 );
 
 
